@@ -25,6 +25,7 @@ public class CompiladorJava {
     System.out.printf("Informe o nome de arquivo texto:\n");
     String nome = ler.nextLine();
     nome = nome.concat(".txt");
+    //teste
  
     System.out.printf("\nConteúdo do arquivo texto:\n");
     try{
