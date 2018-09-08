@@ -20,6 +20,13 @@ public class CompiladorJava {
      */
     public static void main(String[] args) {
     Scanner ler = new Scanner(System.in);
+    
+    String[] reservadas = { "PROGRAM", "BEGIN", "END", "IF", "THEN", "ELSE", "WHILE", "DO", 
+        "UNTIL", "REPEAT", "INTEGER", "REAL", "ALL", "AND", "OR", "STRING" };
+    
+    String[] operadores = { "<", ">", "=>", "<=", "=", "<>", "+", "-", "*", "/", "or", "and", ".", ",",
+        ";", ")", "(", ":="};
+    
     boolean fileRead = false;
     String charArray = "";
  
