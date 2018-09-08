@@ -21,7 +21,6 @@ public class CompiladorJava {
     public static void main(String[] args) {
     Scanner ler = new Scanner(System.in);
     String charArray = "";
-    //teste
  
     System.out.printf("Informe o nome de arquivo texto:\n");
     String nome = ler.nextLine();
