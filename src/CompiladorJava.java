@@ -20,36 +20,38 @@ public class CompiladorJava {
      */
     public static void main(String[] args) {
     Scanner ler = new Scanner(System.in);
+    boolean fileRead = false;
     String charArray = "";
  
-    System.out.printf("Informe o nome de arquivo texto:\n");
-    String nome = ler.nextLine();
-    nome = nome.concat(".txt");
-    //teste
- 
-    System.out.printf("\nConteúdo do arquivo texto:\n");
-    try{
-        FileReader arq = new FileReader(nome);
-        BufferedReader lerArq = new BufferedReader(arq);
- 
-        String linha = lerArq.readLine(); // lê a primeira linha
-// a variável "linha" recebe o valor "null" quando o processo
-// de repetição atingir o final do arquivo texto
-        while (linha != null) {
-            //System.out.printf("%s\n", linha);
-    		for (int i=0; i < linha.length(); i++) {
-    			System.out.println(linha.charAt(i));
-                        charArray = charArray.concat(Character.toString(linha.charAt(i)));
+        do {            
+            System.out.printf("Informe o nome de arquivo texto:\n");
+            String nome = ler.nextLine();
+            nome = nome.concat(".txt");
+            
+            //System.out.printf("\nConteúdo do arquivo texto:\n");
+            try {
+                FileReader arq = new FileReader(nome);
+                BufferedReader lerArq = new BufferedReader(arq);
+                
+                String linha = lerArq.readLine();                
+                while (linha != null) {
+                    for (int i = 0; i < linha.length(); i++) {
+                        System.out.println(linha.charAt(i));
+                        if ((int) linha.charAt(i) != 32) {
+                            charArray = charArray.concat(Character.toString(linha.charAt(i)));
+                        }                        
+                    }
+                    linha = lerArq.readLine();
                 }
- 
-            linha = lerArq.readLine(); // lê da segunda até a última linha
-        }
- 
-        arq.close();
-    }catch(IOException e){
-        System.err.printf("Erro na abertura do arquivo: %s.\n",
-            e.getMessage());
-    }
+                
+                fileRead = true;
+                arq.close();
+            } catch (IOException e) {
+                System.out.printf("Erro na abertura do arquivo, tente novamente!");
+                System.out.println();
+                fileRead = false;
+            }
+        } while (fileRead != true);
     
     System.out.println();
   }    
