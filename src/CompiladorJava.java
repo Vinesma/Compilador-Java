@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -15,7 +9,7 @@ import java.util.Scanner;
  */
 public class CompiladorJava {
     
-    /*Vetores de checagem*/
+    /*Vetores de checagem*/ /*Talvez utilizar enum no futuro para isso*/
     public static final String[] RESERVADAS = { "PROGRAM", "BEGIN", "END", "IF",
         "THEN", "ELSE", "WHILE", "DO", "UNTIL", "REPEAT", "INTEGER", "REAL",
         "ALL", "AND", "OR", "STRING" };
