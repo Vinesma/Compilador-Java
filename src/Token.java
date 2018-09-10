@@ -48,6 +48,6 @@ class Token {
                 + "\nID: " + this.getId() 
                 + "\nLEXEMA: " + this.getLexema() 
                 + "\nPOSIÇÃO: " + this.getPos() 
-                + "\nVALOR: " + this.getValor()); 
+                + "\nVALOR: " + this.getValor() + "\n"); 
     }
 }

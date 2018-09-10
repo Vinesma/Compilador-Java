@@ -9,45 +9,45 @@ import java.util.Scanner;
  */
 public class CompiladorJava {
     
-    /*Vetores de checagem*/ /*Talvez utilizar enum no futuro para isso*/
+    /*Vetores de checagem*/
     public static final String[] RESERVADAS = { "PROGRAM", "BEGIN", "END", "IF",
         "THEN", "ELSE", "WHILE", "DO", "UNTIL", "REPEAT", "INTEGER", "REAL",
         "ALL", "AND", "OR", "STRING" };
     
     public static final String[] OPERADORES = { "<", ">", "=>", "<=", "=", "<>",
-        "+", "-", "*", "/", "or", "and",".", ",",";", ")", "(", ":="};
+        "+", "-", "*", "/", "or", "and", ".", ",", ";", ")", "(", ":="};
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
     Scanner ler = new Scanner(System.in); //usado para ler o arquivo de texto            
     
-    boolean fileRead = false; //variável para checar se o arquivo foi encontrado
+    boolean fileRead; //variável para checar se o arquivo foi encontrado
     boolean erro = false;
     String charArray = ""; //String de todos os chars encontrados sem os espaços
-    String comp;
+    String compara = "";
     Token[] tokenArray = new Token[100]; //vetor de objetos token
     int cont = 0;
+    int linhax = 1;
  
         do {            
             System.out.printf("Informe o nome de arquivo texto:\n");
             String nome = ler.nextLine(); 
             nome = nome.concat(".txt");
             
-            //System.out.printf("\nConteúdo do arquivo texto:\n");
             try {
                 FileReader arq = new FileReader(nome);
                 BufferedReader lerArq = new BufferedReader(arq);
                 
                 String linha = lerArq.readLine(); //lê a primeira linha do arquivo de texto                
-                while (linha != null) { //enquanto não for EOF, ler o arquivo
+                while (linha != null) {           //enquanto não for EOF, ler o arquivo
                     for (int i = 0; i < linha.length(); i++) { //usa o charAt para pegar cada caractere
-                        //System.out.println(linha.charAt(i));
-                        if ((int) linha.charAt(i) > 32) { //remove os espaços (ASCII = 32)
+                        if ((int) linha.charAt(i) > 32) {      //remove os espaços (ASCII = 32)
                             charArray = charArray.concat(Character.toString(linha.charAt(i))); 
                             //concatena com a String de chars
                         }                        
                     }
+                    charArray = charArray.concat(" ");
                     linha = lerArq.readLine(); //lê da segunda linha em diante 
                 }
                 
@@ -61,23 +61,40 @@ public class CompiladorJava {
         } while (fileRead != true);
     
         for (int i = 0; i < charArray.length(); i++){
-            //int percorre = i;
-
-            if(Character.isAlphabetic(charArray.charAt(i))){
-                if(     Character.toUpperCase(charArray.charAt(i)) == 'P' && 
-                        Character.toUpperCase(charArray.charAt(i+1)) == 'R' && 
-                        Character.toUpperCase(charArray.charAt(i+2)) == 'O' && 
-                        Character.toUpperCase(charArray.charAt(i+3)) == 'G' && 
-                        Character.toUpperCase(charArray.charAt(i+4)) == 'R' && 
-                        Character.toUpperCase(charArray.charAt(i+5)) == 'A' && 
-                        Character.toUpperCase(charArray.charAt(i+6)) == 'M'){
-                    
-                    tokenArray[cont] = new Token("Program","",1);
+            
+            if(charArray.charAt(i) != ';' && charArray.charAt(i) != ','){
+                compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
+            }else{                            
+                tokenArray[cont] = new Token("ID",compara,linhax);
+                cont += 1;
+                compara = "";
+                
+                tokenArray[cont] = new Token(Character.toString(charArray.charAt(i)),"",linhax);
+                cont += 1;
+            }
+            
+            for (int j = 0; j < 16; j++) {
+                if(compara.equals(RESERVADAS[j])){
+                    tokenArray[cont] = new Token(compara,"",linhax);
                     cont += 1;
+                    compara = "";
+                    j = 16;
+                }else if(compara.equals(" ")){
+                    linhax += 1;
+                    compara = "";
+                    j = 16;
+                }else if(compara.equals("")){
+                    j = 16;
                 }
-            }            
-        }   
-    tokenArray[0].dados();
+            }          
+        }
+    
+    //DEBUG
+    //for (int i = 0; i < 100; i++) {
+        //tokenArray[i].dados();
+    //}
+    
+    
     System.out.println();
   }    
 }
