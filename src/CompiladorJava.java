@@ -16,6 +16,15 @@ public class CompiladorJava {
     
     public static final String[] OPERADORES = { "<", ">", "=>", "<=", "=", "<>",
         "+", "-", "*", "/", "or", "and", ".", ",", ";", ")", "(", ":="};
+    
+    public static void GeraErro(int erro, int linha){
+
+        switch(erro){
+            case 1:
+                System.out.printf("ERRO 1: Identificador ou símbolo invalido, linha: " + linha );
+                System.out.printf("Compilação encerrada com erros!");
+        }
+    }      
     /**
      * @param args the command line arguments
      */
@@ -23,11 +32,12 @@ public class CompiladorJava {
     Scanner ler = new Scanner(System.in); //usado para ler o arquivo de texto            
     
     boolean fileRead; //variável para checar se o arquivo foi encontrado
-    boolean erro = false;
+    int erro = 0;
     String charArray = ""; //String de todos os chars encontrados sem os espaços
     String compara = "";
     Token[] tokenArray = new Token[100]; //vetor de objetos token
     int cont = 0;
+    int estado = 0;
     int linhax = 1;
  
         do {            
@@ -59,41 +69,69 @@ public class CompiladorJava {
                 fileRead = false;
             }
         } while (fileRead != true);
-    
-        for (int i = 0; i < charArray.length(); i++){
+        
+        do {            
+            compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(cont))));
+            cont++;
+        } while (cont < 7 && cont < charArray.length());
+        
+        cont = 0;
+        
+        if(!compara.equals("PROGRAM")){
+            GeraErro(1,linhax);
+        }else{
+            tokenArray[cont] = new Token(compara,"",linhax);
+            cont = 1;
+            compara = "";
             
-            if(charArray.charAt(i) != ';' && charArray.charAt(i) != ','){
-                compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
-            }else{                            
-                tokenArray[cont] = new Token("ID",compara,linhax);
-                cont += 1;
-                compara = "";
-                
-                tokenArray[cont] = new Token(Character.toString(charArray.charAt(i)),"",linhax);
-                cont += 1;
+            for (int i = 7; i < charArray.length(); i++){
+            
             }
+        }
+        
+            /*if(Character.isAlphabetic(charArray.charAt(i))){
+            compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
             
             for (int j = 0; j < 16; j++) {
-                if(compara.equals(RESERVADAS[j])){
-                    tokenArray[cont] = new Token(compara,"",linhax);
-                    cont += 1;
-                    compara = "";
-                    j = 16;
-                }else if(compara.equals(" ")){
-                    linhax += 1;
-                    compara = "";
-                    j = 16;
-                }else if(compara.equals("")){
-                    j = 16;
-                }
-            }          
-        }
+            if(compara.equals(RESERVADAS[j])){
+            tokenArray[cont] = new Token(compara,"",linhax);
+            cont += 1;
+            compara = "";
+            j = 16;
+            }else if(compara.equals(" ")){
+            linhax += 1;
+            compara = "";
+            j = 16;
+            }else if(compara.equals("")){
+            j = 16;
+            }
+            }
+            }else{
+            tokenArray[cont] = new Token("ID",compara,linhax);
+            cont += 1;
+            compara = "";
+            
+            compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
+            
+            for (int j = 0; j < 18; j++) {
+            if(compara.equals(OPERADORES[j])){
+            tokenArray[cont] = new Token(Character.toString(charArray.charAt(i)),"",linhax);
+            cont += 1;
+            j = 18;
+            }else if(compara.equals(" ")){
+            linhax += 1;
+            compara = "";
+            j = 18;
+            }else if(compara.equals("")){
+            j = 18;
+            }
+            }
+            } */                     
     
     //DEBUG
     //for (int i = 0; i < 100; i++) {
         //tokenArray[i].dados();
     //}
-    
     
     System.out.println();
   }    
