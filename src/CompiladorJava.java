@@ -35,7 +35,7 @@ public class CompiladorJava {
     int erro = 0;
     String charArray = ""; //String de todos os chars encontrados sem os espaços
     String compara = "";
-    Token[] tokenArray = new Token[100]; //vetor de objetos token
+    Token[] tokenArray = new Token[300]; //vetor de objetos token
     int cont = 0;
     int estado = 0;
     int linhax = 1;
@@ -105,31 +105,40 @@ public class CompiladorJava {
                     }
                 }else{
                     
-                    if(        charArray.charAt(i) == ';' 
-                            || charArray.charAt(i) == ','
-                            || charArray.charAt(i) == '+'
-                            || charArray.charAt(i) == '-'
-                            || charArray.charAt(i) == '*'
-                            || charArray.charAt(i) == '/'
-                            || charArray.charAt(i) == '>'
-                            || charArray.charAt(i) == '<'
-                            || charArray.charAt(i) == ')'
-                            || charArray.charAt(i) == '('){
-                        
-                        tokenArray[cont] = new Token("ID",compara,linhax);
-                        cont += 1;
-                        compara = "";
-                        
-                        tokenArray[cont] = new Token(Character.toString(charArray.charAt(i)),"",linhax);
-                        cont += 1;
-                        compara = "";
-                    }else if(charArray.charAt(i) == ':'){
-                        tokenArray[cont] = new Token("ID",compara,linhax);
-                        cont += 1;
-                        compara = "";
-                        compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
-                    }else{
-                        compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
+                    switch (charArray.charAt(i)) {
+                        case '(':
+                            tokenArray[cont] = new Token(Character.toString(charArray.charAt(i)),"",linhax);
+                            cont += 1;
+                            compara = "";
+                            break;
+                        case ';':
+                        case ',':
+                        case '+':
+                        case '-':
+                        case '*':
+                        case '/':
+                        case ')':                        
+                            if (charArray.charAt(i-1) != ')') {
+                                tokenArray[cont] = new Token("ID", compara, linhax);
+                                cont += 1;
+                                compara = "";
+                            }
+                            
+                            tokenArray[cont] = new Token(Character.toString(charArray.charAt(i)),"",linhax);
+                            cont += 1;
+                            compara = "";
+                            break;
+                        case ':':
+                        case '<':
+                        case '>':    
+                            tokenArray[cont] = new Token("ID",compara,linhax);
+                            cont += 1;
+                            compara = "";
+                            compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
+                            break;
+                        default:
+                            compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
+                            break;
                     }
                     
                     for (int j = 0; j < 18; j++) {
@@ -152,6 +161,7 @@ public class CompiladorJava {
     
     //DEBUG
     for (int i = 0; i < cont; i++) {
+        System.out.println("Num:" + i);
         tokenArray[i].dados();
     }
     
