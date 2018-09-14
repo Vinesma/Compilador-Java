@@ -15,9 +15,9 @@ public class CompiladorJava {
         "ALL", "AND", "OR", "STRING" };
     
     public static final String[] OPERADORES = { "<", ">", "=>", "<=", "=", "<>",
-        "+", "-", "*", "/", "or", "and", ".", ",", ";", ")", "(", ":="};
+        "+", "-", "*", "/", "OR", "AND", ".", ",", ";", ")", "(", ":="};
     
-    public static void GeraErro(int erro, int linha){
+    public static void geraErro(int erro, int linha){
 
         switch(erro){
             case 1:
@@ -78,7 +78,7 @@ public class CompiladorJava {
         cont = 0;
         
         if(!compara.equals("PROGRAM")){
-            GeraErro(1,linhax);
+            geraErro(1,linhax);
         }else{
             tokenArray[cont] = new Token(compara,"",linhax);
             cont = 1;
@@ -86,52 +86,74 @@ public class CompiladorJava {
             
             for (int i = 7; i < charArray.length(); i++){
             
+                if(Character.isAlphabetic(charArray.charAt(i)) || Character.isDigit(charArray.charAt(i))){
+                    compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
+                    
+                    for (int j = 0; j < 16; j++) {
+                        if(compara.equals(RESERVADAS[j])){
+                            tokenArray[cont] = new Token(compara,"",linhax);
+                            cont += 1;
+                            compara = "";
+                            j = 16;
+                        }else if(compara.equals(" ")){
+                            linhax += 1;
+                            compara = "";
+                            j = 16;
+                        }else if(compara.equals("")){
+                            j = 16;
+                        }
+                    }
+                }else{
+                    
+                    if(        charArray.charAt(i) == ';' 
+                            || charArray.charAt(i) == ','
+                            || charArray.charAt(i) == '+'
+                            || charArray.charAt(i) == '-'
+                            || charArray.charAt(i) == '*'
+                            || charArray.charAt(i) == '/'
+                            || charArray.charAt(i) == '>'
+                            || charArray.charAt(i) == '<'
+                            || charArray.charAt(i) == ')'
+                            || charArray.charAt(i) == '('){
+                        
+                        tokenArray[cont] = new Token("ID",compara,linhax);
+                        cont += 1;
+                        compara = "";
+                        
+                        tokenArray[cont] = new Token(Character.toString(charArray.charAt(i)),"",linhax);
+                        cont += 1;
+                        compara = "";
+                    }else if(charArray.charAt(i) == ':'){
+                        tokenArray[cont] = new Token("ID",compara,linhax);
+                        cont += 1;
+                        compara = "";
+                        compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
+                    }else{
+                        compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
+                    }
+                    
+                    for (int j = 0; j < 18; j++) {
+                        if(compara.equals(OPERADORES[j])){
+                            tokenArray[cont] = new Token(compara,"",linhax);
+                            cont += 1;
+                            compara = "";
+                            j = 18;
+                        }else if(compara.equals(" ")){
+                            linhax += 1;
+                            compara = "";
+                            j = 18;
+                        }else if(compara.equals("")){
+                            j = 18;
+                        }
+                    }                    
+                }                
             }
         }
-        
-            /*if(Character.isAlphabetic(charArray.charAt(i))){
-            compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
-            
-            for (int j = 0; j < 16; j++) {
-            if(compara.equals(RESERVADAS[j])){
-            tokenArray[cont] = new Token(compara,"",linhax);
-            cont += 1;
-            compara = "";
-            j = 16;
-            }else if(compara.equals(" ")){
-            linhax += 1;
-            compara = "";
-            j = 16;
-            }else if(compara.equals("")){
-            j = 16;
-            }
-            }
-            }else{
-            tokenArray[cont] = new Token("ID",compara,linhax);
-            cont += 1;
-            compara = "";
-            
-            compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
-            
-            for (int j = 0; j < 18; j++) {
-            if(compara.equals(OPERADORES[j])){
-            tokenArray[cont] = new Token(Character.toString(charArray.charAt(i)),"",linhax);
-            cont += 1;
-            j = 18;
-            }else if(compara.equals(" ")){
-            linhax += 1;
-            compara = "";
-            j = 18;
-            }else if(compara.equals("")){
-            j = 18;
-            }
-            }
-            } */                     
     
     //DEBUG
-    //for (int i = 0; i < 100; i++) {
-        //tokenArray[i].dados();
-    //}
+    for (int i = 0; i < cont; i++) {
+        tokenArray[i].dados();
+    }
     
     System.out.println();
   }    

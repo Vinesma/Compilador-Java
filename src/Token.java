@@ -8,23 +8,24 @@ class Token {
     private int pos, valor;
     
     public Token(String id, String lexema, int pos, int valor){
-        this.id = id;
-        this.lexema = lexema;
-        this.pos = pos;
-        this.valor = valor;
+    this.id = id;
+    this.lexema = lexema;
+    this.pos = pos;
+    this.valor = valor;
     }
     
     public Token(String id, String lexema, int pos){
         this.id = id;
         this.lexema = lexema;
         this.pos = pos;
+        this.valor = 0;
     }
     
     public Token(){
         this.id = null;
         this.lexema = null;
         this.pos = 0;
-        //this.valor = 0;
+        this.valor = 0;
     }
     
     public String getId(){
@@ -45,9 +46,9 @@ class Token {
     
     public void dados(){
         System.out.println("DEBUG: "
-                + "\nID: " + this.getId() 
-                + "\nLEXEMA: " + this.getLexema() 
-                + "\nPOSIÇÃO: " + this.getPos() 
-                + "\nVALOR: " + this.getValor() + "\n"); 
+                + "\nID: " + this.getId()
+                + "\nLEXEMA: " + this.getLexema()
+                + "\nPOSIÇÃO: " + this.getPos()
+                + "\nVALOR: " + this.getValor() + "\n");
     }
 }
