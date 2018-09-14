@@ -1,0 +1,6 @@
+Program t1;
+	i1 := i2 + 10;
+	if (( x > 20) and (y < 10)) then
+		All (l1);
+	end;
+end.
