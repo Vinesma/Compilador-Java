@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -16,6 +17,10 @@ public class CompiladorJava {
     
     public static final String[] OPERADORES = { "<", ">", "=>", "<=", "=", "<>",
         "+", "-", "*", "/", "OR", "AND", ".", ",", ";", ")", "(", ":="};
+    
+    public static void SCANNER(String arquivo){
+        
+    }
     
     public static void geraErro(int erro, int linha){
 
@@ -32,18 +37,22 @@ public class CompiladorJava {
     Scanner ler = new Scanner(System.in); //usado para ler o arquivo de texto            
     
     boolean fileRead; //variável para checar se o arquivo foi encontrado
-    int erro = 0;
     String charArray = ""; //String de todos os chars encontrados sem os espaços
     String compara = "";
     Token[] tokenArray = new Token[300]; //vetor de objetos token
     int cont = 0;
-    int estado = 0;
     int linhax = 1;
  
-        do {            
-            System.out.printf("Informe o nome de arquivo texto:\n");
-            String nome = ler.nextLine(); 
-            nome = nome.concat(".txt");
+        do{            
+            String nome = JOptionPane.showInputDialog("Informe o nome do arquivo de texto:");
+            
+            /*System.out.printf("Informe o nome de arquivo texto:\n");
+            String nome = ler.nextLine();*/
+            if(nome == null){
+                nome = "";
+            }else{
+                nome = nome.concat(".txt");
+            }
             
             try {
                 FileReader arq = new FileReader(nome);
@@ -64,16 +73,15 @@ public class CompiladorJava {
                 fileRead = true;
                 arq.close();
             } catch (IOException e) { //catch para erros de abertura de arquivo
-                System.out.printf("Erro na abertura do arquivo, tente novamente!\n");
-                System.out.println();
+                JOptionPane.showMessageDialog(null, "Erro na abertura do arquivo, tente novamente!");
                 fileRead = false;
-            }
-        } while (fileRead != true);
+            }            
+        }while (fileRead != true);
         
-        do {            
+        do{            
             compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(cont))));
             cont++;
-        } while (cont < 7 && cont < charArray.length());
+        }while (cont < 7 && cont < charArray.length());
         
         cont = 0;
         
