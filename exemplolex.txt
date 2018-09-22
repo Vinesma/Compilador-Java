@@ -4,8 +4,8 @@ Program teste;
 	String l1;
 Begin
 	Begin
-		i1 := i2 + 10;
+		i1 := i2 + 10; {comentario}
 		if (( x > 20) and (y < 10)) then
-			All (l1);
+			All (l1); {{duplo}}
 	end;
 end.
