@@ -139,7 +139,11 @@ public class CompiladorJava {
                     }                    
                 }
             }
-            JOptionPane.showMessageDialog(null, "Léxico concluido!");
+            
+            //JOptionPane.showMessageDialog(null, "Léxico concluido!");
+            linhax = 1;
+            compara = "";
+            charArray = "";
         }
         
         //DEBUG
