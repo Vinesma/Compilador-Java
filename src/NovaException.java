@@ -8,8 +8,8 @@
  *
  * @author Otavio
  */
-public class IdentificadorInvalidoException extends Exception{
-    public IdentificadorInvalidoException(String msg){
+public class NovaException extends Exception{
+    public NovaException(String msg){
         super(msg);
     } 
 }
