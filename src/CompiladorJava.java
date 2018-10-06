@@ -20,10 +20,10 @@ public class CompiladorJava {
     public static void SCANNER(String arquivo){
         boolean fileRead; //variável para checar se o arquivo foi encontrado
         String charArray = ""; //String de todos os chars encontrados sem os espaços
-        String compara = "";
-        Token[] tokenArray = new Token[300]; //vetor de objetos token
+        String compara = "";        
         int cont = 0;
         int linhax = 1;
+        Token[] tokenArray = new Token[300]; //vetor de objetos token
                     
         try {
             FileReader arq = new FileReader(arquivo);
@@ -139,8 +139,6 @@ public class CompiladorJava {
                     }                    
                 }
             }
-            
-            //JOptionPane.showMessageDialog(null, "Léxico concluido!");
             linhax = 1;
             compara = "";
             charArray = "";
