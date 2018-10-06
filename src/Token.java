@@ -8,10 +8,10 @@ class Token {
     private int pos, valor;
     
     public Token(String id, String lexema, int pos, int valor){
-    this.id = id;
-    this.lexema = lexema;
-    this.pos = pos;
-    this.valor = valor;
+        this.id = id;
+        this.lexema = lexema;
+        this.pos = pos;
+        this.valor = valor;
     }
     
     public Token(String id, String lexema, int pos){

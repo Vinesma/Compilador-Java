@@ -1,11 +1,11 @@
 Program teste;
-	Integer x, y , zz1;
+	Integer x, y , zz1; 
 	real i1, i2;
 	String l1;
 Begin
 	Begin
-		i1 := i2 + 10; {comentario}
+		i1 := i2 + 10; {esse comentario tem que ser ignorado}
 		if (( x > 20) and (y < 10)) then
-			All (l1); {{duplo}}
+			All (l1); {{comentario duplo}}
 	end;
 end.
