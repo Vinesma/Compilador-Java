@@ -43,20 +43,23 @@ public class CompiladorJava {
                 }                
             
             charArray = charArray.concat(" ");//concatena um espaço vazio na String para marcar o fim da linha
+            linhax += 1;
             linha = lerArq.readLine(); //lê da segunda linha em diante 
             }        
         fileRead = true;
         arq.close();
         
         if(cont < 0){ //erros relacionados a comentários
-            geraErro(1, linhax);
-            fileRead = false;
-            //throw new IOException();
+            throw new IdentificadorInvalidoException("ERRO 1: Identificador ou símbolo invalido");
         }        
         cont = 0;
+        linhax = 1;
         
         }catch(IOException e){ //catch para erros de abertura de arquivo
             JOptionPane.showMessageDialog(null, "Erro na abertura do arquivo, tente novamente!");
+            fileRead = false;
+        }catch(IdentificadorInvalidoException e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
             fileRead = false;
         }            
         
