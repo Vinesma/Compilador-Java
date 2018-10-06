@@ -17,6 +17,10 @@ public class CompiladorJava {
     public static final String[] OPERADORES = { "<", ">", "=>", "<=", "=", "<>",
         "+", "-", "*", "/", "OR", "AND", ".", ",", ";", ")", "(", ":="};
     
+    public static boolean ehNumerico(String str){
+        return str.matches("-?\\d+(\\.\\d+)?");
+    }
+    
     public static void SCANNER(String arquivo) throws IOException,NovaException{
         boolean fileRead; //variável para checar se o arquivo foi encontrado
         String charArray = ""; //String de todos os chars encontrados sem os espaços
@@ -74,7 +78,7 @@ public class CompiladorJava {
                     
                 if (Character.isAlphabetic(charArray.charAt(i)) || Character.isDigit(charArray.charAt(i))) {
                     compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
-                        
+   
                     for (int j = 0; j < 16; j++) {
                         if (compara.equals(RESERVADAS[j])) {
                             tokenArray[cont] = new Token(compara, "", linhax);
@@ -105,19 +109,27 @@ public class CompiladorJava {
                         case '/':
                         case ')':                                
                             if (charArray.charAt(i - 1) != ')') {
-                                tokenArray[cont] = new Token("ID", compara, linhax);
+                                if(ehNumerico(compara)){
+                                    tokenArray[cont] = new Token("ID", compara, linhax, Integer.parseInt(compara));
+                                }else{
+                                    tokenArray[cont] = new Token("ID", compara, linhax);
+                                }
                                 cont += 1;
                                 compara = "";
                             }
-                                
+    
                             tokenArray[cont] = new Token(Character.toString(charArray.charAt(i)), "", linhax);
                             cont += 1;
                             compara = "";
                             break;
                         case ':':
                         case '<':
-                        case '>':                                
-                            tokenArray[cont] = new Token("ID", compara, linhax);
+                        case '>':
+                            if(ehNumerico(compara)){
+                                    tokenArray[cont] = new Token("ID", compara, linhax, Integer.parseInt(compara));
+                                }else{
+                                    tokenArray[cont] = new Token("ID", compara, linhax);
+                                }
                             cont += 1;
                             compara = "";
                             compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
