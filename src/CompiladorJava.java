@@ -20,9 +20,9 @@ public class CompiladorJava {
     public static void SCANNER(String arquivo){
         boolean fileRead; //variável para checar se o arquivo foi encontrado
         String charArray = ""; //String de todos os chars encontrados sem os espaços
-        String compara = "";        
-        int cont = 0;
-        int linhax = 1;
+        String compara = ""; //String utilizada para pegar tokens individualmente        
+        int cont = 0; //contador utilizado para diversas coisas
+        int linhax = 1; //demarca em que linha o código se encontra
         Token[] tokenArray = new Token[300]; //vetor de objetos token
                     
         try {
@@ -44,16 +44,16 @@ public class CompiladorJava {
             
             charArray = charArray.concat(" ");//concatena um espaço vazio na String para marcar o fim da linha
             linha = lerArq.readLine(); //lê da segunda linha em diante 
-            }
-            
-        if(cont < 0){ //erros relacionados a comentários
-            geraErro(1, linhax);
-            throw new IOException();
-        }
-        
-        cont = 0;
+            }        
         fileRead = true;
         arq.close();
+        
+        if(cont < 0){ //erros relacionados a comentários
+            geraErro(1, linhax);
+            fileRead = false;
+            //throw new IOException();
+        }        
+        cont = 0;
         
         }catch(IOException e){ //catch para erros de abertura de arquivo
             JOptionPane.showMessageDialog(null, "Erro na abertura do arquivo, tente novamente!");

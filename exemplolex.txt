@@ -1,5 +1,6 @@
 Program teste;
-	Integer x, y , zz1;
+	Integer x, y , zz1; { comentario
+        de duas linhas}
 	real i1, i2;
 	String l1;
 Begin
