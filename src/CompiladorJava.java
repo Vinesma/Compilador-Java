@@ -32,16 +32,26 @@ public class CompiladorJava {
             
             while (linha != null) {           //enquanto não for EOF, ler o arquivo
                 for (int i = 0; i < linha.length(); i++) { //usa o charAt para pegar cada caractere
-                    if ((int) linha.charAt(i) > 32) {      //remove os espaços (ASCII = 32)
+                    if (linha.charAt(i) == '{') { //tratamento de comentários: Ignorar
+                        cont += 1;
+                    } else if (linha.charAt(i) == '}'){
+                        cont -= 1;
+                    } else if((int) linha.charAt(i) > 32 && cont == 0){ //remove os espaços (ASCII = 32)
                         charArray = charArray.concat(Character.toString(linha.charAt(i))); 
                         //concatena com a String de chars
                     }                        
                 }                
             
-            charArray = charArray.concat(" ");
+            charArray = charArray.concat(" ");//concatena um espaço vazio na String para marcar o fim da linha
             linha = lerArq.readLine(); //lê da segunda linha em diante 
             }
             
+        if(cont < 0){ //erros relacionados a comentários
+            geraErro(1, linhax);
+            throw new IOException();
+        }
+        
+        cont = 0;
         fileRead = true;
         arq.close();
         
