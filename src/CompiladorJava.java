@@ -17,7 +17,16 @@ public class CompiladorJava {
     public static final String[] OPERADORES = { "<", ">", "=>", "<=", "=", "<>",
         "+", "-", "*", "/", "OR", "AND", ".", ",", ";", ")", "(", ":="};
     
-    public static boolean ehNumerico(String str){
+    public static boolean ehValido(String str){ //verifica se existe um digito no primeiro caractere da string
+        
+        if (!str.equals("")) {
+            return !Character.isDigit(str.charAt(0));
+        }else{
+            return true;
+        }
+    }
+    
+    public static boolean ehNumerico(String str){ //verifica se toda a string é um numero
         return str.matches("-?\\d+(\\.\\d+)?");
     }
     
@@ -111,8 +120,10 @@ public class CompiladorJava {
                             if (charArray.charAt(i - 1) != ')') {
                                 if(ehNumerico(compara)){
                                     tokenArray[cont] = new Token("ID", compara, linhax, Integer.parseInt(compara));
+                                }else if(!ehValido(compara)){
+                                    throw new NovaException("ERRO 1: Identificador ou símbolo invalido, linha: " + linhax);
                                 }else{
-                                    tokenArray[cont] = new Token("ID", compara, linhax);
+                                    tokenArray[cont] = new Token("ID", compara, linhax);    
                                 }
                                 cont += 1;
                                 compara = "";
@@ -127,8 +138,10 @@ public class CompiladorJava {
                         case '>':
                             if(ehNumerico(compara)){
                                     tokenArray[cont] = new Token("ID", compara, linhax, Integer.parseInt(compara));
+                                }else if(!ehValido(compara)){
+                                    throw new NovaException("ERRO 1: Identificador ou símbolo invalido, linha: " + linhax);
                                 }else{
-                                    tokenArray[cont] = new Token("ID", compara, linhax);
+                                    tokenArray[cont] = new Token("ID", compara, linhax);    
                                 }
                             cont += 1;
                             compara = "";
