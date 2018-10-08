@@ -17,8 +17,7 @@ public class CompiladorJava {
     public static final String[] OPERADORES = { "<", ">", "=>", "<=", "=", "<>",
         "+", "-", "*", "/", "OR", "AND", ".", ",", ";", ")", "(", ":="};
     
-    public static boolean ehValido(String str){ //verifica se existe um digito no primeiro caractere da string
-        
+    public static boolean ehValido(String str){ //verifica se existe um digito no primeiro caractere da string        
         if (!str.equals("")) {
             return !Character.isDigit(str.charAt(0));
         }else{
@@ -56,7 +55,7 @@ public class CompiladorJava {
             }
             
             if(cont < 0){ //erros relacionados a comentários
-                throw new NovaException("ERRO 1: Identificador ou símbolo invalido, linha: " + linhax);
+                throw new NovaException("ERRO 1: Identificador ou símbolo invalido, verifique os comentários, linha: " + linhax);
             }
         
             charArray = charArray.concat(" ");//concatena um espaço vazio na String para marcar o fim da linha
@@ -64,7 +63,7 @@ public class CompiladorJava {
             linha = lerArq.readLine(); //lê da segunda linha em diante 
         }
        
-        arq.close();
+        arq.close(); //fim de leitura do arquivo
                 
         cont = 0;
         linhax = 1;          
@@ -77,7 +76,7 @@ public class CompiladorJava {
         cont = 0;
             
         if (!compara.equals("PROGRAM")) {
-            throw new NovaException("ERRO 1: Identificador ou símbolo invalido, linha: " + linhax);
+            throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
         } else {
             tokenArray[cont] = new Token(compara, "", linhax);
             cont = 1;
@@ -121,7 +120,7 @@ public class CompiladorJava {
                                 if(ehNumerico(compara)){
                                     tokenArray[cont] = new Token("ID", compara, linhax, Integer.parseInt(compara));
                                 }else if(!ehValido(compara)){
-                                    throw new NovaException("ERRO 1: Identificador ou símbolo invalido, linha: " + linhax);
+                                    throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
                                 }else{
                                     tokenArray[cont] = new Token("ID", compara, linhax);    
                                 }
@@ -139,7 +138,7 @@ public class CompiladorJava {
                             if(ehNumerico(compara)){
                                     tokenArray[cont] = new Token("ID", compara, linhax, Integer.parseInt(compara));
                                 }else if(!ehValido(compara)){
-                                    throw new NovaException("ERRO 1: Identificador ou símbolo invalido, linha: " + linhax);
+                                    throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
                                 }else{
                                     tokenArray[cont] = new Token("ID", compara, linhax);    
                                 }
