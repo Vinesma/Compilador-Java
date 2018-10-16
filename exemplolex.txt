@@ -5,7 +5,7 @@ Program teste;
 Begin
 	Begin
 		i1 := i2 + 10;
-                x:=vif if; {esse comentario tem que ser ignorado}
+                x := vif; {esse comentario tem que ser ignorado}
 		if (( x> 20) and (y < 10)) then
 			All (l1);
 	end;

@@ -9,7 +9,7 @@ import javax.swing.JOptionPane;
  */
 public class CompiladorJava {
     
-    public static Token[] tokenArray = new Token[300]; //vetor de objetos token
+    public static Token[] tokenArray = new Token[400]; //vetor de objetos token
     
     /*Vetores de checagem*/
     public static final String[] RESERVADAS = { "PROGRAM", "BEGIN", "END", "IF",
@@ -31,13 +31,16 @@ public class CompiladorJava {
         return str.matches("-?\\d+(\\.\\d+)?");
     }
     
+    public static void LEXICO(){
+        //analisador léxico
+    }
+    
     public static void SCANNER(String arquivo) throws IOException,NovaException{
         boolean fileRead; //variável para checar se o arquivo foi encontrado
         String charArray = ""; //String de todos os chars encontrados sem os espaços
         String compara = ""; //String utilizada para pegar tokens individualmente        
         int cont = 0; //contador utilizado para diversas coisas
         int linhax = 1; //demarca em que linha o código se encontra
-        //Token[] tokenArray = new Token[300]; //vetor de objetos token
                     
         FileReader arq = new FileReader(arquivo);
         BufferedReader lerArq = new BufferedReader(arq);
