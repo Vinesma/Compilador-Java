@@ -9,6 +9,8 @@ import javax.swing.JOptionPane;
  */
 public class CompiladorJava {
     
+    public static Token[] tokenArray = new Token[300]; //vetor de objetos token
+    
     /*Vetores de checagem*/
     public static final String[] RESERVADAS = { "PROGRAM", "BEGIN", "END", "IF",
         "THEN", "ELSE", "WHILE", "DO", "UNTIL", "REPEAT", "INTEGER", "REAL",
@@ -35,7 +37,7 @@ public class CompiladorJava {
         String compara = ""; //String utilizada para pegar tokens individualmente        
         int cont = 0; //contador utilizado para diversas coisas
         int linhax = 1; //demarca em que linha o código se encontra
-        Token[] tokenArray = new Token[300]; //vetor de objetos token
+        //Token[] tokenArray = new Token[300]; //vetor de objetos token
                     
         FileReader arq = new FileReader(arquivo);
         BufferedReader lerArq = new BufferedReader(arq);
