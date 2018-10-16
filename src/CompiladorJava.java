@@ -54,7 +54,7 @@ public class CompiladorJava {
                 }                        
             }
             
-            if(cont < 0){ //erros relacionados a comentários
+            if(cont != 0){ //erros relacionados a comentários
                 throw new NovaException("ERRO 1: Identificador ou símbolo invalido, verifique os comentários, linha: " + linhax);
             }
         
