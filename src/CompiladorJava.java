@@ -72,7 +72,6 @@ public class CompiladorJava {
     }
     
     public static void SCANNER(String arquivo) throws IOException,NovaException{
-        boolean fileRead; //variável para checar se o arquivo foi encontrado
         String charArray = ""; //String de todos os chars encontrados sem os espaços
         String compara = ""; //String utilizada para pegar tokens individualmente        
         int cont = 0; //contador utilizado para diversas coisas
