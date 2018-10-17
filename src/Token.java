@@ -1,7 +1,4 @@
-/**
- *
- * @author Otavio
- */
+
 class Token {
     
     private String id, lexema;
