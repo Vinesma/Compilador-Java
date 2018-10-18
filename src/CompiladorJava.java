@@ -11,6 +11,8 @@ public class CompiladorJava {
     
     public static Token[] tokenArray = new Token[400]; //vetor de objetos token
     
+    //public static Pilha[] tokenPilha = new Pilha[400];
+    
     /*Vetores de checagem*/
     public static final String[] RESERVADAS = { "PROGRAM", "BEGIN", "END", "IF",
         "THEN", "ELSE", "WHILE", "DO", "UNTIL", "REPEAT", "INTEGER", "REAL",
@@ -31,8 +33,22 @@ public class CompiladorJava {
         return str.matches("-?\\d+(\\.\\d+)?");
     }
     
-    public static void LEXICO(){
-        //analisador léxico
+    public static void SINTATICO(int quantTokens){
+        int estado = 1;
+        int cont2 = 1;
+        
+        do {            
+            switch (estado) {
+                case 1: //<bloco_principal> ::= Programa  <id> ; [ <decl_var> ]*  Begin <bloco>  End.
+                    
+                    break;
+                case 2: //<bloco> ::= Begin [<comando>  [ <comando>]*]? End ;
+
+                    break;
+                case 3: //<decl_var> ::= <tipo>  <id>  [,<id>]*;
+                
+            }
+        } while (cont2 <= quantTokens);
     }
     
     public static void SCANNER(String arquivo) throws IOException,NovaException{
@@ -44,7 +60,7 @@ public class CompiladorJava {
                     
         FileReader arq = new FileReader(arquivo);
         BufferedReader lerArq = new BufferedReader(arq);
-        String linha = lerArq.readLine(); //lê a primeira linha do arquivo de texto                
+        String linha = lerArq.readLine(); //lê a primeira linha do arquivo de texto               
             
         while (linha != null) { //enquanto não for EOF, ler o arquivo
             
@@ -175,13 +191,14 @@ public class CompiladorJava {
         }
         linhax = 1;
         compara = "";
-        charArray = "";
+        charArray = "";        
               
         //DEBUG
         for (int i = 0; i < cont; i++) {
             System.out.println("Num:" + i);
             tokenArray[i].dados();
-        }        
+        }                
+        SINTATICO(cont);
     }  
     
     /**
