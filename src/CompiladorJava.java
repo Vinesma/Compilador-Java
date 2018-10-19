@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import javax.swing.JOptionPane;
+import java.util.Stack;
 
 /**
  *
@@ -11,7 +12,7 @@ public class CompiladorJava {
     
     public static Token[] tokenArray = new Token[400]; //vetor de objetos token
     
-    //public static Pilha[] tokenPilha = new Pilha[400];
+    public static Stack tokenPilha = new Stack(); //pilha utilizada pelo SINTÁTICO
     
     /*Vetores de checagem*/
     public static final String[] RESERVADAS = { "PROGRAM", "BEGIN", "END", "IF",
@@ -33,21 +34,40 @@ public class CompiladorJava {
         return str.matches("-?\\d+(\\.\\d+)?");
     }
     
-    public static void SINTATICO(int quantTokens){
+    public static void SINTATICO(int quantTokens) throws NovaException{
         int estado = 1;
-        int cont2 = 1;
-        
+        int linhax = 0;
+        int cont2 = 0;
+
         do {            
             switch (estado) {
-                case 1: //<bloco_principal> ::= Programa  <id> ; [ <decl_var> ]*  Begin <bloco>  End.
-                    
+                case 1: //estado empilhadeira
+                    linhax++;
+                    if ((tokenArray[cont2].getId().equals(";") 
+                        || tokenArray[cont2].getId().equals("BEGIN")) 
+                        || tokenArray[cont2].getId().equals("THEN") 
+                        || tokenArray[cont2].getId().equals(".")) {
+                        
+                        tokenPilha.push(tokenArray[cont2].getId());
+                        estado++;
+                    } else {
+                        tokenPilha.push(tokenArray[cont2].getId());
+                    }
                     break;
-                case 2: //<bloco> ::= Begin [<comando>  [ <comando>]*]? End ;
-
+                case 2: //<bloco_principal> ::= Program  <id> ;            
+                    if (tokenPilha.peek().equals(";"))
+                        tokenPilha.pop();
+                    else throw new NovaException("ERRO 2: Símbolo" + tokenPilha.pop() + "inesperado, se espera um ID válido, linha: " + linhax);
+                    if (tokenPilha.peek().equals("ID"))
+                        tokenPilha.pop();
+                    else throw new NovaException("ERRO 2: Símbolo" + tokenPilha.pop() + "inesperado, se espera um ID válido, linha: " + linhax);
+                    if (tokenPilha.peek().equals("PROGRAM"))
+                        tokenPilha.pop();
+                    else throw new NovaException("ERRO 2: Símbolo" + tokenPilha.pop() + "inesperado, se espera um ID válido, linha: " + linhax);
+                    estado = 1;
                     break;
-                case 3: //<decl_var> ::= <tipo>  <id>  [,<id>]*;
-                
             }
+            cont2++;
         } while (cont2 <= quantTokens);
     }
     
