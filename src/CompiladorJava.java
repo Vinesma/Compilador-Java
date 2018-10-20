@@ -42,34 +42,35 @@ public class CompiladorJava {
         int linhax = 0;
         int cont2 = 0;
 
-        do {            
-            switch (estado) {
-                case 1: //estado empilhadeira
-                    linhax++;
-                    if ((tokenArray[cont2].getId().equals(";") 
-                        || tokenArray[cont2].getId().equals("BEGIN")) 
-                        || tokenArray[cont2].getId().equals("THEN") 
-                        || tokenArray[cont2].getId().equals(".")) {
-                        
-                        tokenPilha.push(tokenArray[cont2].getId());
-                        estado++;
-                    } else {
-                        tokenPilha.push(tokenArray[cont2].getId());
-                    }
-                    break;
-                case 2: //<bloco_principal> ::= Program  <id> ;            
-                    if (tokenPilha.peek().equals(";"))
-                        tokenPilha.pop();
-                    else throw new NovaException("ERRO 2: Símbolo" + tokenPilha.pop() + "inesperado, se espera um ID válido, linha: " + linhax);
-                    if (tokenPilha.peek().equals("ID"))
-                        tokenPilha.pop();
-                    else throw new NovaException("ERRO 2: Símbolo" + tokenPilha.pop() + "inesperado, se espera um ID válido, linha: " + linhax);
-                    if (tokenPilha.peek().equals("PROGRAM"))
-                        tokenPilha.pop();
-                    else throw new NovaException("ERRO 2: Símbolo" + tokenPilha.pop() + "inesperado, se espera um ID válido, linha: " + linhax);
-                    estado = 1;
-                    break;
+        do {           
+            linhax++;
+            if ((tokenArray[cont2].getId().equals(";") 
+                    || tokenArray[cont2].getId().equals("BEGIN")) 
+                    || tokenArray[cont2].getId().equals("THEN") 
+                    || tokenArray[cont2].getId().equals(".")) {
+                
+                tokenFila.add(tokenArray[cont2].getId());
+                estado++;
+            }else{
+                tokenFila.add(tokenArray[cont2].getId());
             }
+            
+            /*switch (estado) {
+            case 1: //estado empilhadeira
+            break;
+            case 2: //<bloco_principal> ::= Program  <id> ;
+            if (tokenPilha.peek().equals(";"))
+            tokenPilha.pop();
+            else throw new NovaException("ERRO 2: Símbolo" + tokenPilha.pop() + "inesperado, se espera um ID válido, linha: " + linhax);
+            if (tokenPilha.peek().equals("ID"))
+            tokenPilha.pop();
+            else throw new NovaException("ERRO 2: Símbolo" + tokenPilha.pop() + "inesperado, se espera um ID válido, linha: " + linhax);
+            if (tokenPilha.peek().equals("PROGRAM"))
+            tokenPilha.pop();
+            else throw new NovaException("ERRO 2: Símbolo" + tokenPilha.pop() + "inesperado, se espera um ID válido, linha: " + linhax);
+            estado = 1;
+            break;
+            }*/
             cont2++;
         } while (cont2 <= quantTokens);
     }
