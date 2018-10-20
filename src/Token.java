@@ -1,5 +1,8 @@
 
-class Token {
+public class Token {
+    
+    public static final String EPSILON = "§";
+    public static final int FUNCTION = 4;
     
     private String id, lexema;
     private int pos, valor;

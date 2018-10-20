@@ -15,7 +15,7 @@ public class CompiladorJava {
     
     public static Stack tokenPilha = new Stack(); //pilha utilizada pelo SINTÁTICO
     
-    public static LinkedList<String> tokenFila = new LinkedList<String>();
+    public static LinkedList<Token> tokenFila = new LinkedList<Token>();
     
     /*Vetores de checagem*/
     public static final String[] RESERVADAS = { "PROGRAM", "BEGIN", "END", "IF",
@@ -35,44 +35,6 @@ public class CompiladorJava {
     
     public static boolean ehNumerico(String str){ //verifica se toda a string é um numero
         return str.matches("-?\\d+(\\.\\d+)?");
-    }
-    
-    public static void SINTATICO(int quantTokens) throws NovaException{
-        int estado = 1;
-        int linhax = 0;
-        int cont2 = 0;
-
-        do {           
-            linhax++;
-            if ((tokenArray[cont2].getId().equals(";") 
-                    || tokenArray[cont2].getId().equals("BEGIN")) 
-                    || tokenArray[cont2].getId().equals("THEN") 
-                    || tokenArray[cont2].getId().equals(".")) {
-                
-                tokenFila.add(tokenArray[cont2].getId());
-                estado++;
-            }else{
-                tokenFila.add(tokenArray[cont2].getId());
-            }
-            
-            /*switch (estado) {
-            case 1: //estado empilhadeira
-            break;
-            case 2: //<bloco_principal> ::= Program  <id> ;
-            if (tokenPilha.peek().equals(";"))
-            tokenPilha.pop();
-            else throw new NovaException("ERRO 2: Símbolo" + tokenPilha.pop() + "inesperado, se espera um ID válido, linha: " + linhax);
-            if (tokenPilha.peek().equals("ID"))
-            tokenPilha.pop();
-            else throw new NovaException("ERRO 2: Símbolo" + tokenPilha.pop() + "inesperado, se espera um ID válido, linha: " + linhax);
-            if (tokenPilha.peek().equals("PROGRAM"))
-            tokenPilha.pop();
-            else throw new NovaException("ERRO 2: Símbolo" + tokenPilha.pop() + "inesperado, se espera um ID válido, linha: " + linhax);
-            estado = 1;
-            break;
-            }*/
-            cont2++;
-        } while (cont2 <= quantTokens);
     }
     
     public static void SCANNER(String arquivo) throws IOException,NovaException{
@@ -220,8 +182,15 @@ public class CompiladorJava {
         for (int i = 0; i < cont; i++) {
             System.out.println("Num:" + i);
             tokenArray[i].dados();
-        }                
-        //SINTATICO(cont);
+        }
+        
+        SintaticoAux sAux;
+        sAux = new SintaticoAux();
+        
+        for (int i = 0; i < cont; i++) {
+            tokenFila.add(tokenArray[i]);
+        }
+        sAux.PARSER(tokenFila);
     }  
     
     /**
