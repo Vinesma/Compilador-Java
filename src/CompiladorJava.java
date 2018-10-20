@@ -3,6 +3,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 import java.util.Stack;
+import java.util.LinkedList;
 
 /**
  *
@@ -13,6 +14,8 @@ public class CompiladorJava {
     public static Token[] tokenArray = new Token[400]; //vetor de objetos token
     
     public static Stack tokenPilha = new Stack(); //pilha utilizada pelo SINTÁTICO
+    
+    public static LinkedList<String> tokenFila = new LinkedList<String>();
     
     /*Vetores de checagem*/
     public static final String[] RESERVADAS = { "PROGRAM", "BEGIN", "END", "IF",
@@ -217,7 +220,7 @@ public class CompiladorJava {
             System.out.println("Num:" + i);
             tokenArray[i].dados();
         }                
-        SINTATICO(cont);
+        //SINTATICO(cont);
     }  
     
     /**
