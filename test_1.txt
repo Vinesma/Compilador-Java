@@ -1,0 +1,9 @@
+Program teste;
+    Integer x1,x2;
+    String h;
+    Real s2,ty;
+
+    Begin
+        Begin
+        End;
+    End.

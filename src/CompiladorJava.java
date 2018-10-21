@@ -180,29 +180,11 @@ public class CompiladorJava {
         Sintatico sint;
         sint = new Sintatico();
         
-        /*for (int i = 0; i < cont; i++) {
-        tokenFila.add(tokenArray[i]);
-        }*/
+        for (int i = 0; i < cont; i++) {
+            tokenFila.add(tokenArray[i]);
+        }
         
-        tokenFila.add(new Token("PROGRAM","",1));
-        tokenFila.add(new Token("ID","Teste",1));
-        tokenFila.add(new Token(";","",1));
-        tokenFila.add(new Token("INTEGER","",2));
-        tokenFila.add(new Token("ID","X",2));
-        tokenFila.add(new Token(",","",2));
-        tokenFila.add(new Token("ID","Y",2));
-        tokenFila.add(new Token(",","",2));
-        tokenFila.add(new Token("ID","ZZ1",2));
-        tokenFila.add(new Token(";","",2));
-        tokenFila.add(new Token("REAL","",3));
-        tokenFila.add(new Token("ID","I1",3));
-        tokenFila.add(new Token(",","",3));
-        tokenFila.add(new Token("ID","I2",3));
-        tokenFila.add(new Token(";","",3));
-        tokenFila.add(new Token("STRING","",4));
-        tokenFila.add(new Token("ID","L1",4));
-        tokenFila.add(new Token(";","",4));
-        sint.PARSER(tokenFila);
+        //sint.PARSER(tokenFila);
         
     }  
     
