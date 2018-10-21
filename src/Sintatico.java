@@ -16,7 +16,6 @@ public class Sintatico {
             bloco();    //Begin [<comando>  [ <comando>]*]? End ;
         end_();         //End
         ponto();        //.
-        //expressao();
     }
     
     private void proxToken(){
@@ -24,116 +23,30 @@ public class Sintatico {
         
         linha = tokenAtual.getPos();
         tokens.pop();
-        // at the end of input we return an epsilon token
+
         if (tokens.isEmpty())
             tokenAtual = new Token(Token.FINAL, "", linha);
         else
             tokenAtual = tokens.getFirst();
     }
     
-    private void expressao() throws NovaException{
-        // expressao -> signed_term sum_op
-        signedTerm();
-        sumOp();
-    }
-    
-    private void sumOp() throws NovaException{
-        if (tokenAtual.getId().equals(Token.ADD) || tokenAtual.getId().equals(Token.SUB)){
-            // sum_op -> PLUSMINUS term sum_op
-            proxToken();
-            term();
-            sumOp();
-        }else{
-            // sum_op -> FINAL
-        }
-    }
-    
-    private void signedTerm() throws NovaException{
-        if (tokenAtual.getId().equals(Token.ADD) || tokenAtual.getId().equals(Token.SUB)){
-            // signed_term -> PLUSMINUS term
-            proxToken();
-            term();
-        }else{
-            // signed_term -> term
-            term();
-        }
-    }
-    
-    private void term() throws NovaException{
-        // term -> factor term_op
-        factor();
-        termOp();
-    }
-
-    private void termOp() throws NovaException{
-        if (tokenAtual.getId().equals(Token.MULT) || tokenAtual.getId().equals(Token.DIV)){
-            // term_op -> MULTDIV factor term_op
-            proxToken();
-            signedFactor();
-            termOp();
-        }else{
-            // term_op -> FINAL
-        }
-    }
-    
-    private void factor() throws NovaException{
-        // factor -> argument factor_op
-        argument();
-        factorOp();
-    }
-
-    private void factorOp() throws NovaException{
-        if (tokenAtual.getId().equals("^")){
-            // factor_op -> RAISED expressao
-            proxToken();
-            signedFactor();
-        }else{
-            // factor_op -> FINAL
-        }
-    }
-    
-    private void signedFactor() throws NovaException{
-        if (tokenAtual.getId().equals(Token.ADD) || tokenAtual.getId().equals(Token.SUB)){
-            // signed_factor -> PLUSMINUS factor
-            proxToken();
-            factor();
-        }else{
-            // signed_factor -> factor
-            factor();
-        }
-    }
-    
-    private void argument() throws NovaException{
-        if (tokenAtual.getId().equals(Token.FUNCTION)){
-            // argument -> FUNCTION argument
-            proxToken();
-            argument();
-        }else if (tokenAtual.getId().equals(Token.ABRE_PARENTESES)){
-            // argument -> OPEN_BRACKET sum CLOSE_BRACKET
-            proxToken();
-            expressao();
-
-            if (tokenAtual.getId().equals(Token.FECHA_PARENTESES))
-                throw new NovaException("Closing brackets expected and " + tokenAtual.getId() + " found instead");
-
-            proxToken();
-        }else{
-            // argument -> valor
-            valor();
-        }
-    }
-    
     private void valor() throws NovaException{
         if (tokenAtual.getId().equals("NUMERICO")){
-            // argument -> NUMBER
             proxToken();
         }else if (tokenAtual.getId().equals("ID")){
-            // argument -> VARIABLE
             proxToken();
         }else{
             throw new NovaException("Erro 2: Símbolo "
                     + tokenAtual.getId() + " inesperado. Esperando: 'ID ou NUMERICO'. "
                     + "Linha: " + tokenAtual.getPos());
+        }
+    }
+    
+    private boolean e_valor(String compara) throws NovaException{
+        if (compara.equals("NUMERICO") || compara.equals("ID")){
+            return true;
+        }else{
+            return false;
         }
     }
 
@@ -355,21 +268,73 @@ public class Sintatico {
     }
     
     private void expr_relacional() throws NovaException{ //<val> <op_relacionais> <val> | (<expr_relacional>) [<op_booleanos> (<expr_relacional>)] ? 
-        if (tokenAtual.getId().equals(Token.UNTIL)){
-            proxToken();
-        }else{
-            throw new NovaException("Erro 2: Símbolo "
-                    + tokenAtual.getId() + " inesperado. Esperando: ';'. "
-                    + "Linha: " + tokenAtual.getPos());
+        if(e_valor(tokenAtual.getId())) {
+            valor();
+            op_relacionais();
+            valor();
+        } else {
+            abre_parenteses();
+                expr_relacional();
+            fecha_parenteses();
+                op_boleanos();
+                //abre_parenteses();
+                    //expr_relacional();
+                //fecha_parenteses();
         }
     }
     
     private void expr_arit() throws NovaException{ //<val> | <val>  <op_aritmetico> <val> | (<expr_arit> ) <op_aritmetico> (<expr_arit>)
-        if (tokenAtual.getId().equals(Token.UNTIL)){
+        if(e_valor(tokenAtual.getId())){
+            valor();
+            if(e_valor(tokenAtual.getId())){
+                op_arit();
+                valor();
+            }
+        }else{
+            abre_parenteses();
+                expr_arit();
+            fecha_parenteses();
+            op_arit();
+            abre_parenteses();
+                expr_arit();
+            fecha_parenteses();
+        }
+    }
+    
+    private void op_arit() throws NovaException{ // + | - | * | /
+        if (tokenAtual.getId().equals(Token.ADD) 
+                || tokenAtual.getId().equals(Token.SUB) 
+                || tokenAtual.getId().equals(Token.DIV) 
+                || tokenAtual.getId().equals(Token.MULT)){
             proxToken();
         }else{
             throw new NovaException("Erro 2: Símbolo "
-                    + tokenAtual.getId() + " inesperado. Esperando: ';'. "
+                    + tokenAtual.getId() + " inesperado. Esperando: 'Operador boleano'. "
+                    + "Linha: " + tokenAtual.getPos());
+        }
+    }
+    
+    private void op_boleanos() throws NovaException{ // OR | AND
+        if (tokenAtual.getId().equals(Token.OR) || tokenAtual.getId().equals(Token.AND)){
+            proxToken();
+        }else{
+            throw new NovaException("Erro 2: Símbolo "
+                    + tokenAtual.getId() + " inesperado. Esperando: 'Operador boleano'. "
+                    + "Linha: " + tokenAtual.getPos());
+        }
+    }
+    
+    private void op_relacionais() throws NovaException{ // < | > | <= | >= | = | <>
+        if (tokenAtual.getId().equals(Token.MENORQ) 
+                || tokenAtual.getId().equals(Token.MAIORQ) 
+                || tokenAtual.getId().equals(Token.MENORQ_IGUAL) 
+                || tokenAtual.getId().equals(Token.MAIORQ_IGUAl) 
+                || tokenAtual.getId().equals(Token.IGUAL) 
+                || tokenAtual.getId().equals(Token.DIFERENTE)){
+            proxToken();
+        }else{
+            throw new NovaException("Erro 2: Símbolo "
+                    + tokenAtual.getId() + " inesperado. Esperando: 'Operador boleano'. "
                     + "Linha: " + tokenAtual.getPos());
         }
     }

@@ -25,7 +25,15 @@ public class Token {
     public static final String DO = "DO";
     public static final String REPEAT = "REPEAT";
     public static final String UNTIL = "UNTIL";
+    public static final String OR = "OR";
+    public static final String AND = "AND";
     public static final String ALL = "ALL";
+    public static final String MAIORQ = ">";
+    public static final String MENORQ = "<";
+    public static final String MENORQ_IGUAL = "<=";
+    public static final String MAIORQ_IGUAl = ">=";
+    public static final String IGUAL = "=";
+    public static final String DIFERENTE = "<>";
     public static final int FUNCTION = 4;
     
     private String id, lexema;
