@@ -2,12 +2,13 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import javax.swing.JOptionPane;
+import java.util.LinkedList;
 
-/**
- *
- * @author Otavio
- */
 public class CompiladorJava {
+    
+    public static Token[] tokenArray = new Token[400]; //vetor de objetos token
+    
+    public static LinkedList<Token> tokenFila = new LinkedList<Token>();
     
     /*Vetores de checagem*/
     public static final String[] RESERVADAS = { "PROGRAM", "BEGIN", "END", "IF",
@@ -30,17 +31,15 @@ public class CompiladorJava {
     }
     
     public static void SCANNER(String arquivo) throws IOException,NovaException{
-        boolean fileRead; //variável para checar se o arquivo foi encontrado
         String charArray = ""; //String de todos os chars encontrados sem os espaços
         String compara = ""; //String utilizada para pegar tokens individualmente        
         int cont = 0; //contador utilizado para diversas coisas
         int linhax = 1; //demarca em que linha o código se encontra
-        Token[] tokenArray = new Token[300]; //vetor de objetos token
                     
         FileReader arq = new FileReader(arquivo);
         BufferedReader lerArq = new BufferedReader(arq);
-        String linha = lerArq.readLine(); //lê a primeira linha do arquivo de texto                
-            
+        String linha = lerArq.readLine(); //lê a primeira linha do arquivo de texto               
+   
         while (linha != null) { //enquanto não for EOF, ler o arquivo
             
             for (int i = 0; i < linha.length(); i++) { //usa o charAt para pegar cada caractere
@@ -116,13 +115,13 @@ public class CompiladorJava {
                         case '*':
                         case '/':
                         case ')':                                
-                            if (charArray.charAt(i - 1) != ')') {
+                            if (charArray.charAt(i - 1) != ')' && !compara.equals("")) {
                                 if(ehNumerico(compara)){
-                                    tokenArray[cont] = new Token("ID", compara, linhax, Integer.parseInt(compara));
+                                    tokenArray[cont] = new Token("NUMERICO", "", linhax, Integer.parseInt(compara));
                                 }else if(!ehValido(compara)){
                                     throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
                                 }else{
-                                    tokenArray[cont] = new Token("ID", compara, linhax);    
+                                        tokenArray[cont] = new Token("ID", compara, linhax);    
                                 }
                                 cont += 1;
                                 compara = "";
@@ -136,11 +135,11 @@ public class CompiladorJava {
                         case '<':
                         case '>':
                             if(ehNumerico(compara)){
-                                    tokenArray[cont] = new Token("ID", compara, linhax, Integer.parseInt(compara));
+                                    tokenArray[cont] = new Token("NUMERICO", "", linhax, Integer.parseInt(compara));
                                 }else if(!ehValido(compara)){
                                     throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
                                 }else{
-                                    tokenArray[cont] = new Token("ID", compara, linhax);    
+                                    tokenArray[cont] = new Token("ID", compara, linhax);     
                                 }
                             cont += 1;
                             compara = "";
@@ -170,13 +169,23 @@ public class CompiladorJava {
         }
         linhax = 1;
         compara = "";
-        charArray = "";
+        charArray = "";        
               
         //DEBUG
         for (int i = 0; i < cont; i++) {
             System.out.println("Num:" + i);
             tokenArray[i].dados();
-        }        
+        }
+        
+        Sintatico sint;
+        sint = new Sintatico();
+        
+        for (int i = 0; i < cont; i++) {
+            tokenFila.add(tokenArray[i]);
+        }
+        
+        //sint.PARSER(tokenFila);
+        
     }  
     
     /**
