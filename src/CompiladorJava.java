@@ -75,7 +75,9 @@ public class CompiladorJava {
         cont = 0;
             
         if (!compara.equals("PROGRAM")) {
-            throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
+            throw new NovaException("Erro 2: Símbolo "
+                    + compara + " inesperado. Esperando: 'PROGRAM'. "
+                    + "Linha: " + linhax);
         } else {
             tokenArray[cont] = new Token(compara, "", linhax);
             cont = 1;
@@ -184,7 +186,7 @@ public class CompiladorJava {
             tokenFila.add(tokenArray[i]);
         }
         
-        //sint.PARSER(tokenFila);
+        sint.PARSER(tokenFila);
         
     }  
     
