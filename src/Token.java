@@ -1,7 +1,15 @@
 
 public class Token {
     
-    public static final String EPSILON = "§";
+    public static final String FINAL = ""; //representa o fim do parser
+    public static final String PONTOVIRGULA = ";";
+    public static final String VIRGULA = ",";
+    public static final String ADD = "+";
+    public static final String SUB = "-";
+    public static final String MULT = "*";
+    public static final String DIV = "/";
+    public static final String ABRE_PARENTESES = "(";
+    public static final String FECHA_PARENTESES = ")";
     public static final int FUNCTION = 4;
     
     private String id, lexema;

@@ -2,18 +2,11 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import javax.swing.JOptionPane;
-import java.util.Stack;
 import java.util.LinkedList;
 
-/**
- *
- * @author Otavio
- */
 public class CompiladorJava {
     
     public static Token[] tokenArray = new Token[400]; //vetor de objetos token
-    
-    public static Stack tokenPilha = new Stack(); //pilha utilizada pelo SINTÁTICO
     
     public static LinkedList<Token> tokenFila = new LinkedList<Token>();
     
@@ -46,7 +39,7 @@ public class CompiladorJava {
         FileReader arq = new FileReader(arquivo);
         BufferedReader lerArq = new BufferedReader(arq);
         String linha = lerArq.readLine(); //lê a primeira linha do arquivo de texto               
-            
+   
         while (linha != null) { //enquanto não for EOF, ler o arquivo
             
             for (int i = 0; i < linha.length(); i++) { //usa o charAt para pegar cada caractere
@@ -122,13 +115,13 @@ public class CompiladorJava {
                         case '*':
                         case '/':
                         case ')':                                
-                            if (charArray.charAt(i - 1) != ')') {
+                            if (charArray.charAt(i - 1) != ')' && !compara.equals("")) {
                                 if(ehNumerico(compara)){
-                                    tokenArray[cont] = new Token("ID", compara, linhax, Integer.parseInt(compara));
+                                    tokenArray[cont] = new Token("NUMERICO", "", linhax, Integer.parseInt(compara));
                                 }else if(!ehValido(compara)){
                                     throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
                                 }else{
-                                    tokenArray[cont] = new Token("ID", compara, linhax);    
+                                        tokenArray[cont] = new Token("ID", compara, linhax);    
                                 }
                                 cont += 1;
                                 compara = "";
@@ -142,11 +135,11 @@ public class CompiladorJava {
                         case '<':
                         case '>':
                             if(ehNumerico(compara)){
-                                    tokenArray[cont] = new Token("ID", compara, linhax, Integer.parseInt(compara));
+                                    tokenArray[cont] = new Token("NUMERICO", "", linhax, Integer.parseInt(compara));
                                 }else if(!ehValido(compara)){
                                     throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
                                 }else{
-                                    tokenArray[cont] = new Token("ID", compara, linhax);    
+                                    tokenArray[cont] = new Token("ID", compara, linhax);     
                                 }
                             cont += 1;
                             compara = "";
@@ -184,13 +177,33 @@ public class CompiladorJava {
             tokenArray[i].dados();
         }
         
-        SintaticoAux sAux;
-        sAux = new SintaticoAux();
+        Sintatico sint;
+        sint = new Sintatico();
         
-        for (int i = 0; i < cont; i++) {
-            tokenFila.add(tokenArray[i]);
-        }
-        sAux.PARSER(tokenFila);
+        /*for (int i = 0; i < cont; i++) {
+        tokenFila.add(tokenArray[i]);
+        }*/
+        
+        tokenFila.add(new Token("PROGRAM","",1));
+        tokenFila.add(new Token("ID","Teste",1));
+        tokenFila.add(new Token(";","",1));
+        tokenFila.add(new Token("INTEGER","",2));
+        tokenFila.add(new Token("ID","X",2));
+        tokenFila.add(new Token(",","",2));
+        tokenFila.add(new Token("ID","Y",2));
+        tokenFila.add(new Token(",","",2));
+        tokenFila.add(new Token("ID","ZZ1",2));
+        tokenFila.add(new Token(";","",2));
+        tokenFila.add(new Token("REAL","",3));
+        tokenFila.add(new Token("ID","I1",3));
+        tokenFila.add(new Token(",","",3));
+        tokenFila.add(new Token("ID","I2",3));
+        tokenFila.add(new Token(";","",3));
+        tokenFila.add(new Token("STRING","",4));
+        tokenFila.add(new Token("ID","L1",4));
+        tokenFila.add(new Token(";","",4));
+        sint.PARSER(tokenFila);
+        
     }  
     
     /**
