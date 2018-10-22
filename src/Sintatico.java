@@ -42,6 +42,16 @@ public class Sintatico {
         }
     }
     
+    private void id_() throws NovaException{
+        if (tokenAtual.getId().equals("ID")){
+            proxToken();
+        }else{
+            throw new NovaException("Erro 2: Símbolo "
+                    + tokenAtual.getId() + " inesperado. Esperando: 'ID'. "
+                    + "Linha: " + tokenAtual.getPos());
+        }
+    }
+    
     private boolean e_valor(String compara) throws NovaException{
         if (compara.equals("NUMERICO") || compara.equals("ID")){
             return true;
@@ -132,7 +142,7 @@ public class Sintatico {
     private void program_() throws NovaException{
         if (tokenAtual.getId().equals(Token.PROGRAM)){
             proxToken();
-            valor();
+            id_();
             pontovirgula();
             proxToken();
         }else{
@@ -162,6 +172,9 @@ public class Sintatico {
     private void bloco() throws NovaException{ //Begin [<comando>  [ <comando>]*]? End ;
         begin_();
             comando();
+            while (!tokenAtual.getId().equals(Token.END)) {            
+                comando();
+            }
         end_();
         pontovirgula();
         proxToken();
@@ -197,9 +210,9 @@ public class Sintatico {
         proxToken();
         abre_parenteses();
             valor();
-            do
+            while (!tokenAtual.getId().equals(")")) {                    
                 virgula_ID();
-            while(!tokenAtual.getId().equals(")"));
+            }
         fecha_parenteses();
         pontovirgula();
         proxToken();
@@ -267,7 +280,8 @@ public class Sintatico {
         }
     }
     
-    private void expr_relacional() throws NovaException{ //<val> <op_relacionais> <val> | (<expr_relacional>) [<op_booleanos> (<expr_relacional>)] ? 
+    private void expr_relacional() throws NovaException{ 
+    //<val> <op_relacionais> <val> | (<expr_relacional>) [<op_booleanos> (<expr_relacional>)] ? 
         if(e_valor(tokenAtual.getId())) {
             valor();
             op_relacionais();
@@ -276,19 +290,25 @@ public class Sintatico {
             abre_parenteses();
                 expr_relacional();
             fecha_parenteses();
-                op_boleanos();
-                //abre_parenteses();
-                    //expr_relacional();
-                //fecha_parenteses();
+            if (tokenAtual.getId().equals(Token.AND) || tokenAtual.getId().equals(Token.OR)) {
+                proxToken();
+                abre_parenteses();
+                    expr_relacional();
+                fecha_parenteses();
+            }
         }
     }
     
-    private void expr_arit() throws NovaException{ //<val> | <val>  <op_aritmetico> <val> | (<expr_arit> ) <op_aritmetico> (<expr_arit>)
+    private void expr_arit() throws NovaException{ 
+    //<val> | <val>  <op_aritmetico> <val> | (<expr_arit> ) <op_aritmetico> (<expr_arit>)
         if(e_valor(tokenAtual.getId())){
             valor();
-            if(e_valor(tokenAtual.getId())){
+            if(tokenAtual.getId().equals(Token.ADD) 
+                || tokenAtual.getId().equals(Token.SUB) 
+                || tokenAtual.getId().equals(Token.DIV) 
+                || tokenAtual.getId().equals(Token.MULT)){
                 op_arit();
-                valor();
+                valor();                
             }
         }else{
             abre_parenteses();
@@ -309,17 +329,7 @@ public class Sintatico {
             proxToken();
         }else{
             throw new NovaException("Erro 2: Símbolo "
-                    + tokenAtual.getId() + " inesperado. Esperando: 'Operador boleano'. "
-                    + "Linha: " + tokenAtual.getPos());
-        }
-    }
-    
-    private void op_boleanos() throws NovaException{ // OR | AND
-        if (tokenAtual.getId().equals(Token.OR) || tokenAtual.getId().equals(Token.AND)){
-            proxToken();
-        }else{
-            throw new NovaException("Erro 2: Símbolo "
-                    + tokenAtual.getId() + " inesperado. Esperando: 'Operador boleano'. "
+                    + tokenAtual.getId() + " inesperado. Esperando: 'Operador aritmetico'. "
                     + "Linha: " + tokenAtual.getPos());
         }
     }
@@ -334,7 +344,7 @@ public class Sintatico {
             proxToken();
         }else{
             throw new NovaException("Erro 2: Símbolo "
-                    + tokenAtual.getId() + " inesperado. Esperando: 'Operador boleano'. "
+                    + tokenAtual.getId() + " inesperado. Esperando: 'Operador relacional'. "
                     + "Linha: " + tokenAtual.getPos());
         }
     }

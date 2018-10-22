@@ -19,8 +19,8 @@ public class CompiladorJava {
         "+", "-", "*", "/", "OR", "AND", ".", ",", ";", ")", "(", ":="};
     
     public static boolean ehValido(String str){ //verifica se existe um digito no primeiro caractere da string        
-        if (!str.equals("")) {
-            return !Character.isDigit(str.charAt(0));
+        if (!str.equals("")) {                  //ou se há um espaço vazio, caso true aos dois, retorna um erro
+            return !Character.isDigit(str.charAt(0)) && str.matches("\\S+");
         }else{
             return true;
         }
@@ -75,7 +75,9 @@ public class CompiladorJava {
         cont = 0;
             
         if (!compara.equals("PROGRAM")) {
-            throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
+            throw new NovaException("Erro 2: Símbolo "
+                    + compara + " inesperado. Esperando: 'PROGRAM'. "
+                    + "Linha: " + linhax);
         } else {
             tokenArray[cont] = new Token(compara, "", linhax);
             cont = 1;
@@ -184,7 +186,7 @@ public class CompiladorJava {
             tokenFila.add(tokenArray[i]);
         }
         
-        //sint.PARSER(tokenFila);
+        sint.PARSER(tokenFila);
         
     }  
     
