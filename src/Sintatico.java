@@ -308,7 +308,7 @@ public class Sintatico {
                 || tokenAtual.getId().equals(Token.DIV) 
                 || tokenAtual.getId().equals(Token.MULT)){
                 op_arit();
-                valor();
+                valor();                
             }
         }else{
             abre_parenteses();
