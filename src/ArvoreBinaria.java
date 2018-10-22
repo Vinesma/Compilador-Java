@@ -18,6 +18,20 @@ public class ArvoreBinaria {
         return current;
     }
     
+    private Nodulo addLeft(Nodulo current, String valor){        
+        if (current == null) {
+            return new Nodulo(valor);
+        }
+        
+        current.esq = addLeft(current.esq, valor);
+        
+        return current;
+    }
+    
+    public void addEsq(String valor){
+        raiz = addLeft(raiz, valor);
+    }
+    
     public void add(String valor) {
         raiz = addRecursive(raiz, valor);
     }

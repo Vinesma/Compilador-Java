@@ -193,7 +193,7 @@ public class Sintatico {
     }
     
     private void comando_basico() throws NovaException{ //<atribuicao> | <bloco> | All ( <id>  [, <id>]* );
-        if (tokenAtual.getId().equals("ID")){ //<id> := <expr_arit> ;
+        if (tokenAtual.getId().equals("ID")){ //<id> := <expr_arit> ;            
             proxToken();
             doispontos_igual();
                 expr_arit();
