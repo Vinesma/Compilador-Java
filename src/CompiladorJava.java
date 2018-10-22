@@ -19,8 +19,8 @@ public class CompiladorJava {
         "+", "-", "*", "/", "OR", "AND", ".", ",", ";", ")", "(", ":="};
     
     public static boolean ehValido(String str){ //verifica se existe um digito no primeiro caractere da string        
-        if (!str.equals("")) {
-            return !Character.isDigit(str.charAt(0));
+        if (!str.equals("")) {                  //ou se há um espaço vazio, caso true aos dois, retorna um erro
+            return !Character.isDigit(str.charAt(0)) && str.matches("\\S+");
         }else{
             return true;
         }
