@@ -2,6 +2,8 @@ import java.util.LinkedList;
 
 public class Sintatico {
     LinkedList<Token> tokens;
+    LinkedList<String> expressoes;
+    ArvoreBinaria expressaoAtual = new ArvoreBinaria();
     Token tokenAtual;
     
     public void PARSER(LinkedList<Token> tokenFila) throws NovaException{
@@ -193,10 +195,14 @@ public class Sintatico {
     }
     
     private void comando_basico() throws NovaException{ //<atribuicao> | <bloco> | All ( <id>  [, <id>]* );
-        if (tokenAtual.getId().equals("ID")){ //<id> := <expr_arit> ;            
+        if (tokenAtual.getId().equals("ID")){ //<id> := <expr_arit> ;
+            expressaoAtual.add(":=");
+            expressaoAtual.add(tokenAtual.getLexema());
             proxToken();
-            doispontos_igual();
+            doispontos_igual();               
                 expr_arit();
+                //expressoes.add(expressaoAtual.getExpressao());
+                expressaoAtual.deletaArvore();
             pontovirgula();
             proxToken();
         }else if(tokenAtual.getId().equals(Token.ALL)){
@@ -302,11 +308,21 @@ public class Sintatico {
     private void expr_arit() throws NovaException{ 
     //<val> | <val>  <op_aritmetico> <val> | (<expr_arit> ) <op_aritmetico> (<expr_arit>)
         if(e_valor(tokenAtual.getId())){
-            valor();
+            
+            if(tokenAtual.getId().equals("NUMERICO")){
+                expressaoAtual.add(String.valueOf(tokenAtual.getValor()));
+            }else if(tokenAtual.getLexema().equals("")){               
+                expressaoAtual.add(tokenAtual.getId());                    
+            }else{
+                expressaoAtual.add(tokenAtual.getLexema());
+            }
+            
+            valor();           
             if(tokenAtual.getId().equals(Token.ADD) 
                 || tokenAtual.getId().equals(Token.SUB) 
                 || tokenAtual.getId().equals(Token.DIV) 
                 || tokenAtual.getId().equals(Token.MULT)){
+                expressaoAtual.add(tokenAtual.getId());
                 proxToken();
                 expr_arit();
             }
@@ -314,6 +330,7 @@ public class Sintatico {
             abre_parenteses();
                 expr_arit();
             fecha_parenteses();
+            expressaoAtual.add(tokenAtual.getId());
             op_arit();
             abre_parenteses();
                 expr_arit();

@@ -1,5 +1,6 @@
 public class ArvoreBinaria {
     Nodulo raiz;
+    String expressao;
     
     private Nodulo addRecursive(Nodulo current, String valor) {
         if (current == null) {
@@ -11,8 +12,7 @@ public class ArvoreBinaria {
         } else if (current.dir == null) {
             current.dir = addRecursive(current.dir, valor);
         } else {
-            // valor already exists
-            return current;
+            current.dir = addRecursive(current.dir, valor);
         }
  
         return current;
@@ -36,33 +36,37 @@ public class ArvoreBinaria {
         raiz = addRecursive(raiz, valor);
     }
     
-    private Nodulo deleteRecursive(Nodulo current, String valor) {
-        if (current == null) {
-            return null;
-        }
- 
-        if (valor == current.valor) {
-            // Nodulo to delete found
-            // ... code to delete the node will go here
-            if (current.esq == null && current.dir == null) {
-                return null;
-            }
-            
-            if (current.dir == null) {
-                return current.esq;
-            }
- 
-            if (current.esq == null) {
-                return current.dir;
-            }
+    private Nodulo deletaAll(Nodulo current){
+        if(current != null){
+            if(deletaAll(current.esq) == null){
+                    if(deletaAll(current.dir) == null){
+                        return null;
+                    }else{
+                        deletaAll(current.dir);
+                    }
+            }else{
+                deletaAll(current.esq);
+            }          
         }
         
-        if (current.esq != null) {
-            current.esq = deleteRecursive(current.esq, valor);
-            return current;
-        }
-        
-        current.dir = deleteRecursive(current.dir, valor);
         return current;
+    }
+    
+    public void deletaArvore(){
+        raiz = deletaAll(raiz);
+    }
+    
+    public String getExpressao(){
+        expressao = "";
+        traverseInOrder(raiz);             
+        return expressao; //dando bug n sei pq
+    }
+    
+    private void traverseInOrder(Nodulo node) {
+        if (node != null) {
+            traverseInOrder(node.esq);
+            expressao.concat(node.valor + " ");
+            traverseInOrder(node.dir);
+        }       
     }
 }
