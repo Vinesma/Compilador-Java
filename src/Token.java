@@ -1,4 +1,3 @@
-
 public class Token {
     
     public static final String FINAL = ""; //representa o fim do parser
@@ -34,7 +33,6 @@ public class Token {
     public static final String MAIORQ_IGUAl = ">=";
     public static final String IGUAL = "=";
     public static final String DIFERENTE = "<>";
-    public static final int FUNCTION = 4;
     
     private String id, lexema;
     private int pos, valor;
