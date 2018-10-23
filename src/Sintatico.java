@@ -7,15 +7,14 @@ public class Sintatico {
     LinkedList<String> VariaveisStringList  = new LinkedList<>(); //nao implementado ainda
     LinkedList<String> VariaveisIntegerList = new LinkedList<>(); //nao implementado ainda
     LinkedList<String> VariaveisRealList    = new LinkedList<>(); //nao implementado ainda
-    String expressao = "";
     Token tokenAtual;
     
     public void PARSER(LinkedList<Token> tokenFila) throws NovaException{
         this.tokens = tokenFila;
         tokenAtual = this.tokens.getFirst();
         
-        program_();     //Programa  <id> ; 
-        while (!tokenAtual.getId().equals(Token.BEGIN)) {            
+        program_();     //Programa  <id> ;
+        while (!tokenAtual.getId().equals(Token.BEGIN)) {
             decl_var(); //[ <decl_var> ]*
         }
         begin_();       //Begin
@@ -210,7 +209,6 @@ public class Sintatico {
             doispontos_igual();
                 expressaoAtual.dir = expr_arit();
                 exp_AritmeticasList.add(expressaoAtual.dir);
-                expressao = "";
             pontovirgula();
             proxToken();
         }else if(tokenAtual.getId().equals(Token.ALL)){
@@ -323,7 +321,7 @@ public class Sintatico {
             if(tokenAtual.getId().equals("NUMERICO")){
                 temp = String.valueOf(tokenAtual.getValor());
             }else if(tokenAtual.getLexema().equals("")){
-                temp = tokenAtual.getId();                   
+                temp = tokenAtual.getId();
             }else{
                 temp = tokenAtual.getLexema();
             }
