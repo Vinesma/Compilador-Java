@@ -2,8 +2,9 @@ import java.util.LinkedList;
 
 public class Sintatico {
     LinkedList<Token> tokens;
-    LinkedList<String> expressoes;
-    ArvoreBinaria expressaoAtual = new ArvoreBinaria();
+    String[] expressoesArray = new String[300];
+    String expressao = "";
+    int cont = 0;
     Token tokenAtual;
     
     public void PARSER(LinkedList<Token> tokenFila) throws NovaException{
@@ -196,13 +197,17 @@ public class Sintatico {
     
     private void comando_basico() throws NovaException{ //<atribuicao> | <bloco> | All ( <id>  [, <id>]* );
         if (tokenAtual.getId().equals("ID")){ //<id> := <expr_arit> ;
-            expressaoAtual.add(":=");
-            expressaoAtual.add(tokenAtual.getLexema());
+            Nodulo expressaoAtual = new Nodulo(null);
+            
+            expressaoAtual.valor = ":=";
+            expressaoAtual.esq = new Nodulo(tokenAtual.getLexema());
             proxToken();
             doispontos_igual();               
-                expr_arit();
-                //expressoes.add(expressaoAtual.getExpressao());
-                expressaoAtual.deletaArvore();
+                expressaoAtual.dir = expr_arit();
+                traversePostOrder(expressaoAtual.dir);
+                expressoesArray[cont] = expressao;
+                cont++;
+                expressao = "";
             pontovirgula();
             proxToken();
         }else if(tokenAtual.getId().equals(Token.ALL)){
@@ -305,36 +310,55 @@ public class Sintatico {
         }
     }
     
-    private void expr_arit() throws NovaException{ 
+    private Nodulo expr_arit() throws NovaException{ 
     //<val> | <val>  <op_aritmetico> <val> | (<expr_arit> ) <op_aritmetico> (<expr_arit>)
+        Nodulo current = new Nodulo(null);
+        String temp;
+    
         if(e_valor(tokenAtual.getId())){
-            
+
             if(tokenAtual.getId().equals("NUMERICO")){
-                expressaoAtual.add(String.valueOf(tokenAtual.getValor()));
-            }else if(tokenAtual.getLexema().equals("")){               
-                expressaoAtual.add(tokenAtual.getId());                    
+                temp = String.valueOf(tokenAtual.getValor());
+            }else if(tokenAtual.getLexema().equals("")){
+                temp = tokenAtual.getId();                   
             }else{
-                expressaoAtual.add(tokenAtual.getLexema());
+                temp = tokenAtual.getLexema();
             }
             
-            valor();           
+            current.valor = temp;
+            valor();
+            
             if(tokenAtual.getId().equals(Token.ADD) 
                 || tokenAtual.getId().equals(Token.SUB) 
                 || tokenAtual.getId().equals(Token.DIV) 
                 || tokenAtual.getId().equals(Token.MULT)){
-                expressaoAtual.add(tokenAtual.getId());
-                proxToken();
-                expr_arit();
+                
+                current.valor = tokenAtual.getId();
+                current.esq = new Nodulo(temp);
+                op_arit();
+                
+                if(tokenAtual.getId().equals("NUMERICO")){
+                    current.dir = new Nodulo (String.valueOf(tokenAtual.getValor()));
+                }else if(tokenAtual.getLexema().equals("")){
+                    current.dir = new Nodulo (tokenAtual.getId());                   
+                }else{
+                    current.dir = new Nodulo (tokenAtual.getLexema());
+                }
+                valor();
             }
+            
+            return current;
         }else{
             abre_parenteses();
-                expr_arit();
+                current.esq = expr_arit();
             fecha_parenteses();
-            expressaoAtual.add(tokenAtual.getId());
-            op_arit();
+                current.valor = tokenAtual.getId();
+                op_arit();
             abre_parenteses();
-                expr_arit();
+                current.dir = expr_arit();
             fecha_parenteses();
+            
+            return current;
         }
     }
     
@@ -363,6 +387,14 @@ public class Sintatico {
             throw new NovaException("Erro 2: Símbolo "
                     + tokenAtual.getId() + " inesperado. Esperando: 'Operador relacional'. "
                     + "Linha: " + tokenAtual.getPos());
+        }
+    }
+    
+    private void traversePostOrder(Nodulo node) {       
+        if (node != null) {           
+            traversePostOrder(node.esq);
+            traversePostOrder(node.dir);
+            expressao = expressao.concat(node.valor + " ");
         }
     }
 }
