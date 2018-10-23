@@ -2,9 +2,12 @@ import java.util.LinkedList;
 
 public class Sintatico {
     LinkedList<Token> tokens;
-    String[] expressoesArray = new String[300];
+    LinkedList<Nodulo> exp_AritmeticasList  = new LinkedList<>();
+    LinkedList<Nodulo> exp_RelacionaisList  = new LinkedList<>(); //nao implementado ainda
+    LinkedList<String> VariaveisStringList  = new LinkedList<>(); //nao implementado ainda
+    LinkedList<String> VariaveisIntegerList = new LinkedList<>(); //nao implementado ainda
+    LinkedList<String> VariaveisRealList    = new LinkedList<>(); //nao implementado ainda
     String expressao = "";
-    int cont = 0;
     Token tokenAtual;
     
     public void PARSER(LinkedList<Token> tokenFila) throws NovaException{
@@ -15,10 +18,12 @@ public class Sintatico {
         while (!tokenAtual.getId().equals(Token.BEGIN)) {            
             decl_var(); //[ <decl_var> ]*
         }
-        begin_();       //Begin 
+        begin_();       //Begin
             bloco();    //Begin [<comando>  [ <comando>]*]? End ;
         end_();         //End
         ponto();        //.
+        
+        //SEMANTICO; chamar a expressao do semantico aqui
     }
     
     private void proxToken(){
@@ -202,11 +207,9 @@ public class Sintatico {
             expressaoAtual.valor = ":=";
             expressaoAtual.esq = new Nodulo(tokenAtual.getLexema());
             proxToken();
-            doispontos_igual();               
+            doispontos_igual();
                 expressaoAtual.dir = expr_arit();
-                traversePostOrder(expressaoAtual.dir);
-                expressoesArray[cont] = expressao;
-                cont++;
+                exp_AritmeticasList.add(expressaoAtual.dir);
                 expressao = "";
             pontovirgula();
             proxToken();
@@ -369,8 +372,8 @@ public class Sintatico {
                 || tokenAtual.getId().equals(Token.MULT)){
             proxToken();
         }else{
-            throw new NovaException("Erro 2: Símbolo "
-                    + tokenAtual.getId() + " inesperado. Esperando: 'Operador aritmetico'. "
+            throw new NovaException("Erro 7: Operador "
+                    + tokenAtual.getId() + " invalido. Esperando: 'Operador aritmetico'. "
                     + "Linha: " + tokenAtual.getPos());
         }
     }
@@ -384,17 +387,25 @@ public class Sintatico {
                 || tokenAtual.getId().equals(Token.DIFERENTE)){
             proxToken();
         }else{
-            throw new NovaException("Erro 2: Símbolo "
-                    + tokenAtual.getId() + " inesperado. Esperando: 'Operador relacional'. "
+            throw new NovaException("Erro 7: Operador "
+                    + tokenAtual.getId() + " invalido. Esperando: 'Operador relacional'. "
                     + "Linha: " + tokenAtual.getPos());
         }
     }
     
-    private void traversePostOrder(Nodulo node) {       
-        if (node != null) {           
-            traversePostOrder(node.esq);
-            traversePostOrder(node.dir);
-            expressao = expressao.concat(node.valor + " ");
+    private void PercorreArvoreE_D_R(Nodulo node) {
+        if (node != null) {
+            PercorreArvoreE_D_R(node.esq);
+            PercorreArvoreE_D_R(node.dir);
+            //expressao = expressao.concat(node.valor + " ");
+        }
+    }
+    
+    private void PercorreArvoreE_R_D(Nodulo node) {
+        if (node != null) {
+            PercorreArvoreE_R_D(node.esq);
+            //expressao = expressao.concat(node.valor + " ");
+            PercorreArvoreE_R_D(node.dir);
         }
     }
 }
