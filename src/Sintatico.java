@@ -3,19 +3,18 @@ import java.util.LinkedList;
 public class Sintatico {
     LinkedList<Token> tokens;
     LinkedList<Nodulo> exp_AritmeticasList  = new LinkedList<>();
-    LinkedList<Nodulo> exp_RelacionaisList  = new LinkedList<>(); //nao implementado ainda
-    LinkedList<String> VariaveisStringList  = new LinkedList<>(); //nao implementado ainda
-    LinkedList<String> VariaveisIntegerList = new LinkedList<>(); //nao implementado ainda
-    LinkedList<String> VariaveisRealList    = new LinkedList<>(); //nao implementado ainda
-    String expressao = "";
+    LinkedList<Nodulo> exp_RelacionaisList  = new LinkedList<>();
+    LinkedList<String> VariaveisStringList  = new LinkedList<>();
+    LinkedList<String> VariaveisIntegerList = new LinkedList<>();
+    LinkedList<String> VariaveisRealList    = new LinkedList<>();
     Token tokenAtual;
     
     public void PARSER(LinkedList<Token> tokenFila) throws NovaException{
         this.tokens = tokenFila;
         tokenAtual = this.tokens.getFirst();
         
-        program_();     //Programa  <id> ; 
-        while (!tokenAtual.getId().equals(Token.BEGIN)) {            
+        program_();     //Programa  <id> ;
+        while (!tokenAtual.getId().equals(Token.BEGIN)){
             decl_var(); //[ <decl_var> ]*
         }
         begin_();       //Begin
@@ -84,6 +83,16 @@ public class Sintatico {
             valor();
         }else{
             pontovirgula();
+        }
+    }
+    
+    private void virgula() throws NovaException{
+        if (tokenAtual.getId().equals(Token.VIRGULA)){
+            proxToken();
+        }else{
+            throw new NovaException("Erro 2: Símbolo "
+                    + tokenAtual.getId() + " inesperado. Esperando: ','. "
+                    + "Linha: " + tokenAtual.getPos());
         }
     }
     
@@ -161,14 +170,35 @@ public class Sintatico {
     }
     
     private void decl_var() throws NovaException{
-        if (tokenAtual.getId().equals(Token.INTEGER) 
-                || tokenAtual.getId().equals(Token.REAL) 
-                || tokenAtual.getId().equals(Token.STRING)){
+        if (tokenAtual.getId().equals(Token.INTEGER)){
             proxToken();
-            valor();
-            do
-                virgula_ID();
-            while(!tokenAtual.getId().equals(";"));
+            VariaveisIntegerList.add(tokenAtual.getLexema());
+            id_();            
+            while(!tokenAtual.getId().equals(";")){
+                virgula();
+                VariaveisIntegerList.add(tokenAtual.getLexema());
+                id_();
+            }
+            proxToken();
+        }else if(tokenAtual.getId().equals(Token.REAL)){
+            proxToken();
+            VariaveisRealList.add(tokenAtual.getLexema());
+            id_();
+            while(!tokenAtual.getId().equals(";")){
+                virgula();
+                VariaveisRealList.add(tokenAtual.getLexema());
+                id_();
+            }
+            proxToken();
+        }else if(tokenAtual.getId().equals(Token.STRING)){
+            proxToken();
+            VariaveisStringList.add(tokenAtual.getLexema());
+            id_();
+            while(!tokenAtual.getId().equals(";")){
+                virgula();
+                VariaveisStringList.add(tokenAtual.getLexema());
+                id_();
+            }
             proxToken();
         }else{
             throw new NovaException("Erro 2: Símbolo "
@@ -201,16 +231,10 @@ public class Sintatico {
     }
     
     private void comando_basico() throws NovaException{ //<atribuicao> | <bloco> | All ( <id>  [, <id>]* );
-        if (tokenAtual.getId().equals("ID")){ //<id> := <expr_arit> ;
-            Nodulo expressaoAtual = new Nodulo(null);
-            
-            expressaoAtual.valor = ":=";
-            expressaoAtual.esq = new Nodulo(tokenAtual.getLexema());
+        if (tokenAtual.getId().equals("ID")){ //<id> := <expr_arit> ;           
             proxToken();
             doispontos_igual();
-                expressaoAtual.dir = expr_arit();
-                exp_AritmeticasList.add(expressaoAtual.dir);
-                expressao = "";
+                exp_AritmeticasList.add(expr_arit());
             pontovirgula();
             proxToken();
         }else if(tokenAtual.getId().equals(Token.ALL)){
@@ -232,10 +256,10 @@ public class Sintatico {
         proxToken();
     }
     
-    private void if_() throws NovaException{ //if (<expr_relacional>) then <comando> [else <comando>]?
+    private void if_() throws NovaException{ //if (<expr_relacional>) then <comando> [else <comando>]?       
         proxToken();
         abre_parenteses();
-            expr_relacional();
+            exp_RelacionaisList.add(expr_relacional());
         fecha_parenteses();
         then_();
         comando();
@@ -254,10 +278,10 @@ public class Sintatico {
         }
     }
     
-    private void while_() throws NovaException{ //while (<expr_relacional>) do <comando>
+    private void while_() throws NovaException{ //while (<expr_relacional>) do <comando>       
         proxToken();
         abre_parenteses();
-            expr_relacional();
+            exp_RelacionaisList.add(expr_relacional());
         fecha_parenteses();
         do_();
         comando();
@@ -274,11 +298,13 @@ public class Sintatico {
     }
     
     private void repeat_() throws NovaException{ //repeat <comando> until (<expr_relacional>);
+        Nodulo expressaoAtual = new Nodulo(null);
+        
         proxToken();
         comando();
         until_();
         abre_parenteses();
-            expr_relacional();
+            exp_RelacionaisList.add(expr_relacional());
         fecha_parenteses();
         pontovirgula();
         proxToken();
@@ -294,39 +320,43 @@ public class Sintatico {
         }
     }
     
-    private void expr_relacional() throws NovaException{ 
-    //<val> <op_relacionais> <val> | (<expr_relacional>) [<op_booleanos> (<expr_relacional>)] ? 
-        if(e_valor(tokenAtual.getId())) {
+    private Nodulo expr_relacional() throws NovaException{ 
+    //<val> <op_relacionais> <val> | (<expr_relacional>) [<op_booleanos> (<expr_relacional>)] ?
+        Nodulo current = new Nodulo(null);
+    
+        if(e_valor(tokenAtual.getId())){
+            current.esq = new Nodulo(tokenAtual);
             valor();
+            current.valor = tokenAtual;
             op_relacionais();
+            current.dir = new Nodulo(tokenAtual);
             valor();
-        } else {
+            
+            return current;
+        }else{
             abre_parenteses();
-                expr_relacional();
+                current.esq = expr_relacional();
             fecha_parenteses();
             if (tokenAtual.getId().equals(Token.AND) || tokenAtual.getId().equals(Token.OR)) {
+                current.valor = tokenAtual;               
                 proxToken();
                 abre_parenteses();
-                    expr_relacional();
+                    current.dir = expr_relacional();
                 fecha_parenteses();
+            }else{
+                current = current.esq;
             }
-        }
+            return current;
+        }       
     }
     
     private Nodulo expr_arit() throws NovaException{ 
     //<val> | <val>  <op_aritmetico> <val> | (<expr_arit> ) <op_aritmetico> (<expr_arit>)
         Nodulo current = new Nodulo(null);
-        String temp;
+        Token temp;
     
         if(e_valor(tokenAtual.getId())){
-
-            if(tokenAtual.getId().equals("NUMERICO")){
-                temp = String.valueOf(tokenAtual.getValor());
-            }else if(tokenAtual.getLexema().equals("")){
-                temp = tokenAtual.getId();                   
-            }else{
-                temp = tokenAtual.getLexema();
-            }
+            temp = tokenAtual;
             
             current.valor = temp;
             valor();
@@ -336,17 +366,10 @@ public class Sintatico {
                 || tokenAtual.getId().equals(Token.DIV) 
                 || tokenAtual.getId().equals(Token.MULT)){
                 
-                current.valor = tokenAtual.getId();
+                current.valor = tokenAtual;
                 current.esq = new Nodulo(temp);
                 op_arit();
-                
-                if(tokenAtual.getId().equals("NUMERICO")){
-                    current.dir = new Nodulo (String.valueOf(tokenAtual.getValor()));
-                }else if(tokenAtual.getLexema().equals("")){
-                    current.dir = new Nodulo (tokenAtual.getId());                   
-                }else{
-                    current.dir = new Nodulo (tokenAtual.getLexema());
-                }
+                current.dir = new Nodulo (tokenAtual);
                 valor();
             }
             
@@ -355,7 +378,7 @@ public class Sintatico {
             abre_parenteses();
                 current.esq = expr_arit();
             fecha_parenteses();
-                current.valor = tokenAtual.getId();
+                current.valor = tokenAtual;
                 op_arit();
             abre_parenteses();
                 current.dir = expr_arit();
