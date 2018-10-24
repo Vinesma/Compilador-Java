@@ -1,9 +1,9 @@
 public class Nodulo {
-    String valor; //raiz
+    Token valor;  //raiz
     Nodulo esq;   //folha esquerda
     Nodulo dir;   //folha direita
     
-    Nodulo(String valor){
+    Nodulo(Token valor){
         esq = null;
         this.valor = valor;
         dir = null;
