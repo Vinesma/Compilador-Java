@@ -297,9 +297,7 @@ public class Sintatico {
         }
     }
     
-    private void repeat_() throws NovaException{ //repeat <comando> until (<expr_relacional>);
-        Nodulo expressaoAtual = new Nodulo(null);
-        
+    private void repeat_() throws NovaException{ //repeat <comando> until (<expr_relacional>);       
         proxToken();
         comando();
         until_();
