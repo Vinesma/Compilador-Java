@@ -13,6 +13,7 @@ Begin
                         All (l1);
                         x := 10;
                 while(x < 4) do
+                    All(x2);
                     y := 2 + y;
                 repeat
                     all(l1);
