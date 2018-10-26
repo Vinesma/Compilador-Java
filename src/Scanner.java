@@ -50,111 +50,90 @@ public class Scanner {
         arq.close(); //fim de leitura do arquivo
                 
         cont = 0;
-        linhax = 1;          
-        
-        do {                
-            compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(cont))));
-            cont++;
-        } while (cont < 7 && cont < charArray.length());
-            
-        cont = 0;
-            
-        if (!compara.equals("PROGRAM")) {
-            throw new NovaException("Erro 2: Símbolo "
-                    + compara + " inesperado. Esperando: 'PROGRAM'. "
-                    + "Linha: " + linhax);
-        } else {
-            token = new Token(compara, "", linhax);
-            tokenFila.add(token);
-            compara = "";
-                
-            for (int i = 7; i < charArray.length(); i++) {
-                    
-                if (Character.isAlphabetic(charArray.charAt(i)) || Character.isDigit(charArray.charAt(i))) {
-                    compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
+        linhax = 1;
+        for (int i = 0; i < charArray.length(); i++){
+            if (Character.isAlphabetic(charArray.charAt(i)) || Character.isDigit(charArray.charAt(i))){
+                compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
    
-                    for (int j = 0; j < 16; j++) {
-                        if (compara.equals(RESERVADAS[j])) {
-                            token = new Token(compara, "", linhax);
-                            tokenFila.add(token);                           
-                            compara = "";
-                            j = 16;
-                        } else if (compara.equals(" ")) {
-                            linhax += 1;
-                            compara = "";
-                            j = 16;
-                        } else if (compara.equals("")) {
-                            j = 16;
-                        }
+                for (int j = 0; j < 16; j++){
+                    if (compara.equals(RESERVADAS[j])){
+                        token = new Token(compara, "", linhax);
+                        tokenFila.add(token);                           
+                        compara = "";
+                        j = 16;
+                    }else if (compara.equals(" ")){
+                        linhax += 1;
+                        compara = "";
+                        j = 16;
+                    }else if (compara.equals("")){
+                        j = 16;
                     }
-                }else{
-                        
-                    switch (charArray.charAt(i)) {
-                        case '(':
-                            token = new Token(Character.toString(charArray.charAt(i)), "", linhax);
-                            tokenFila.add(token);
-                            compara = "";
-                            break;
-                        case ';':
-                        case ',':
-                        case '+':
-                        case '-':
-                        case '*':
-                        case '/':
-                        case ')':                                
-                            if (charArray.charAt(i - 1) != ')' && !compara.equals("")) {
-                                if(ehNumerico(compara)){
-                                    token = new Token("NUMERICO", "", linhax, Integer.parseInt(compara));
-                                    tokenFila.add(token);
-                                }else if(!ehValido(compara)){
-                                    throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
-                                }else{
-                                    token = new Token("ID", compara, linhax);    
-                                    tokenFila.add(token);
-                                }                                
-                                compara = "";
-                            }
-                            token = new Token(Character.toString(charArray.charAt(i)), "", linhax);
-                            tokenFila.add(token);                            
-                            compara = "";
-                            break;
-                        case ':':
-                        case '<':
-                        case '>':
+                }
+            }else{                        
+                switch (charArray.charAt(i)) {
+                    case '(':
+                        token = new Token(Character.toString(charArray.charAt(i)), "", linhax);
+                        tokenFila.add(token);
+                        compara = "";
+                        break;
+                    case ';':
+                    case ',':
+                    case '+':
+                    case '-':
+                    case '*':
+                    case '/':
+                    case ')':                                
+                        if (charArray.charAt(i - 1) != ')' && !compara.equals("")) {
                             if(ehNumerico(compara)){
-                                    token = new Token("NUMERICO", "", linhax, Integer.parseInt(compara));
-                                    tokenFila.add(token);
-                                }else if(!ehValido(compara)){
-                                    throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
-                                }else{
-                                    token = new Token("ID", compara, linhax);    
-                                    tokenFila.add(token);     
-                                }                            
+                                token = new Token("NUMERICO", "", linhax, Integer.parseInt(compara));
+                                tokenFila.add(token);
+                            }else if(!ehValido(compara)){
+                                throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
+                            }else{
+                                token = new Token("ID", compara, linhax);    
+                                tokenFila.add(token);
+                            }                                
                             compara = "";
-                            compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
-                            break;
-                        default:
-                            compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
-                            break;
                         }
-                        
-                    for (int j = 0; j < 18; j++) {
-                        if (compara.equals(OPERADORES[j])) {
-                            token = new Token(compara, "", linhax);
-                            tokenFila.add(token);                            
-                            compara = "";
+                        token = new Token(Character.toString(charArray.charAt(i)), "", linhax);
+                        tokenFila.add(token);                            
+                        compara = "";
+                        break;
+                    case ':':
+                    case '<':
+                    case '>':
+                        if(ehNumerico(compara)){
+                            token = new Token("NUMERICO", "", linhax, Integer.parseInt(compara));
+                            tokenFila.add(token);
+                        }else if(!ehValido(compara)){
+                            throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
+                        }else{
+                            token = new Token("ID", compara, linhax);    
+                            tokenFila.add(token);     
+                        }                            
+                        compara = "";
+                        compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
+                        break;
+                    default:
+                        compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
+                        break;
+                }
+                for (int j = 0; j < 18; j++) {
+                    if (compara.equals(OPERADORES[j])){
+                        token = new Token(compara, "", linhax);
+                        tokenFila.add(token);                            
+                        compara = "";
+                        j = 18;
+                    }else if (compara.equals(" ")){
+                        linhax += 1;
+                        compara = "";
+                        j = 18;
+                    }else if (compara.equals("")){
                             j = 18;
-                        } else if (compara.equals(" ")) {
-                            linhax += 1;
-                            compara = "";
-                            j = 18;
-                        } else if (compara.equals("")) {
-                            j = 18;
-                        }
-                    }                        
-                }                    
-            }
-        }     
+                    }
+                }                        
+            }                    
+        }            
         //DEBUG
         for (int i = 0; i < tokenFila.size(); i++) {
             System.out.println("Num:" + i);
