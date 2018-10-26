@@ -10,9 +10,8 @@ Begin
                 R4 := (r4) + ((i1 / 15) * (r1 + i2));
                 x := vif; {esse comentario tem que ser ignorado}
 		if (( x > 20) and  ((y < 10) or (2 < x))) then
-                        x := 10;
-                        y := 20;
                         All (l1);
+                        x := 10;
                 while(x < 4) do
                     y := 2 + y;
                 repeat
