@@ -4,10 +4,9 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 public class Scanner {
-    
-    public static Token[] tokenArray = new Token[400]; //vetor de objetos token
-    
-    public static LinkedList<Token> tokenFila = new LinkedList<Token>();
+        
+    private LinkedList<Token> tokenFila = new LinkedList<Token>();
+    private Token token;
     
     /*Vetores de checagem*/
     public static final String[] RESERVADAS = { "PROGRAM", "BEGIN", "END", "IF",
@@ -65,8 +64,8 @@ public class Scanner {
                     + compara + " inesperado. Esperando: 'PROGRAM'. "
                     + "Linha: " + linhax);
         } else {
-            tokenArray[cont] = new Token(compara, "", linhax);
-            cont = 1;
+            token = new Token(compara, "", linhax);
+            tokenFila.add(token);
             compara = "";
                 
             for (int i = 7; i < charArray.length(); i++) {
@@ -76,8 +75,8 @@ public class Scanner {
    
                     for (int j = 0; j < 16; j++) {
                         if (compara.equals(RESERVADAS[j])) {
-                            tokenArray[cont] = new Token(compara, "", linhax);
-                            cont += 1;
+                            token = new Token(compara, "", linhax);
+                            tokenFila.add(token);                           
                             compara = "";
                             j = 16;
                         } else if (compara.equals(" ")) {
@@ -92,8 +91,8 @@ public class Scanner {
                         
                     switch (charArray.charAt(i)) {
                         case '(':
-                            tokenArray[cont] = new Token(Character.toString(charArray.charAt(i)), "", linhax);
-                            cont += 1;
+                            token = new Token(Character.toString(charArray.charAt(i)), "", linhax);
+                            tokenFila.add(token);
                             compara = "";
                             break;
                         case ';':
@@ -105,31 +104,32 @@ public class Scanner {
                         case ')':                                
                             if (charArray.charAt(i - 1) != ')' && !compara.equals("")) {
                                 if(ehNumerico(compara)){
-                                    tokenArray[cont] = new Token("NUMERICO", "", linhax, Integer.parseInt(compara));
+                                    token = new Token("NUMERICO", "", linhax, Integer.parseInt(compara));
+                                    tokenFila.add(token);
                                 }else if(!ehValido(compara)){
                                     throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
                                 }else{
-                                        tokenArray[cont] = new Token("ID", compara, linhax);    
-                                }
-                                cont += 1;
+                                    token = new Token("ID", compara, linhax);    
+                                    tokenFila.add(token);
+                                }                                
                                 compara = "";
                             }
-    
-                            tokenArray[cont] = new Token(Character.toString(charArray.charAt(i)), "", linhax);
-                            cont += 1;
+                            token = new Token(Character.toString(charArray.charAt(i)), "", linhax);
+                            tokenFila.add(token);                            
                             compara = "";
                             break;
                         case ':':
                         case '<':
                         case '>':
                             if(ehNumerico(compara)){
-                                    tokenArray[cont] = new Token("NUMERICO", "", linhax, Integer.parseInt(compara));
+                                    token = new Token("NUMERICO", "", linhax, Integer.parseInt(compara));
+                                    tokenFila.add(token);
                                 }else if(!ehValido(compara)){
                                     throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
                                 }else{
-                                    tokenArray[cont] = new Token("ID", compara, linhax);     
-                                }
-                            cont += 1;
+                                    token = new Token("ID", compara, linhax);    
+                                    tokenFila.add(token);     
+                                }                            
                             compara = "";
                             compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
                             break;
@@ -140,8 +140,8 @@ public class Scanner {
                         
                     for (int j = 0; j < 18; j++) {
                         if (compara.equals(OPERADORES[j])) {
-                            tokenArray[cont] = new Token(compara, "", linhax);
-                            cont += 1;
+                            token = new Token(compara, "", linhax);
+                            tokenFila.add(token);                            
                             compara = "";
                             j = 18;
                         } else if (compara.equals(" ")) {
@@ -156,17 +156,14 @@ public class Scanner {
             }
         }     
         //DEBUG
-        for (int i = 0; i < cont; i++) {
+        for (int i = 0; i < tokenFila.size(); i++) {
             System.out.println("Num:" + i);
-            tokenArray[i].dados();
+            tokenFila.get(i).dados();
         }
         
         Sintatico sint;
         sint = new Sintatico();
         
-        for (int i = 0; i < cont; i++) {
-        tokenFila.add(tokenArray[i]);
-        }       
         sint.PARSER(tokenFila);        
     }
     
