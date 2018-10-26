@@ -51,15 +51,14 @@ public class CompiladorJava {
                     charArray = charArray.concat(Character.toString(linha.charAt(i))); 
                     //concatena com a String de chars
                 }                        
-            }
-            
-            if(cont != 0){ //erros relacionados a comentários
-                throw new NovaException("ERRO 1: Identificador ou símbolo invalido, verifique os comentários, linha: " + linhax);
-            }
-        
+            }                                
             charArray = charArray.concat(" ");//concatena um espaço vazio na String para marcar o fim da linha
             linhax += 1;
             linha = lerArq.readLine(); //lê da segunda linha em diante 
+        }
+        
+        if(cont != 0){ //erros relacionados a comentários
+                throw new NovaException("ERRO 1: Identificador ou símbolo invalido, verifique os comentários");
         }
        
         arq.close(); //fim de leitura do arquivo
