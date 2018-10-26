@@ -202,7 +202,7 @@ public class Sintatico {
             proxToken();
         }else{
             throw new NovaException("Erro 2: Símbolo "
-                    + tokenAtual.getId() + " inesperado. Esperando: 'ID'. "
+                    + tokenAtual.getId() + " inesperado. Esperando: 'INTEGER, STRING ou REAL'. "
                     + "Linha: " + tokenAtual.getPos());
         }
     }

@@ -38,7 +38,7 @@ public class Scanner {
                     //concatena com a String de chars
                 }                        
             }                                
-            charArray = charArray.concat(" ");//concatena um espaço vazio na String para marcar o fim da linha
+            charArray = charArray.concat("|");//concatena um espaço vazio na String para marcar o fim da linha
             linhax += 1;
             linha = lerArq.readLine(); //lê da segunda linha em diante 
         }
@@ -61,11 +61,11 @@ public class Scanner {
                         tokenFila.add(token);                           
                         compara = "";
                         j = 16;
-                    }else if (compara.equals(" ")){
+                    }else if (compara.equals("|")){
                         linhax += 1;
                         compara = "";
                         j = 16;
-                    }else if (compara.equals("")){
+                    }else if (compara.equals(" ")){
                         j = 16;
                     }
                 }
@@ -124,12 +124,12 @@ public class Scanner {
                         tokenFila.add(token);                            
                         compara = "";
                         j = 18;
-                    }else if (compara.equals(" ")){
+                    }else if (compara.equals("|")){
                         linhax += 1;
                         compara = "";
                         j = 18;
-                    }else if (compara.equals("")){
-                            j = 18;
+                    }else if (compara.equals(" ")){
+                        j = 18;
                     }
                 }                        
             }                    
