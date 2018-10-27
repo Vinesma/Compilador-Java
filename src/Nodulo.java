@@ -1,11 +1,11 @@
 public class Nodulo {
-    Token valor;  //raiz
+    Token raiz;  //raiz
     Nodulo esq;   //folha esquerda
     Nodulo dir;   //folha direita
     
-    Nodulo(Token valor){
+    Nodulo(Token raiz){
         esq = null;
-        this.valor = valor;
+        this.raiz = raiz;
         dir = null;
     }
 }

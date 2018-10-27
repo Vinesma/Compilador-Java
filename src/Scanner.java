@@ -54,7 +54,7 @@ public class Scanner {
         for (int i = 0; i < charArray.length(); i++){
             if (Character.isAlphabetic(charArray.charAt(i)) || Character.isDigit(charArray.charAt(i))){
                 compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
-   
+                
                 for (int j = 0; j < 16; j++){
                     if (compara.equals(RESERVADAS[j])){
                         token = new Token(compara, "", linhax);
