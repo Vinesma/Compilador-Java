@@ -1,5 +1,5 @@
 Program teste;
-	Integer x, y , zz1, R4, r1; 
+	Integer x, y, zz1, R4, r1; real zz2;
 	real i1, i2;
 	String l1;
 Begin
@@ -9,9 +9,11 @@ Begin
                 R4 := (i1 / 10) * (r1 + i2);
                 R4 := (r4) + ((i1 / 15) * (r1 + i2));
                 x := vif; {esse comentario tem que ser ignorado}
-		if (( x > 20) and ((y < 10) or (2 < x))) then
-			All (l1);
+		if (( x > 20) and  ((y < 10) or (2 < x))) then
+                        All (l1);
+                        x := 10;
                 while(x < 4) do
+                    All(x2);
                     y := 2 + y;
                 repeat
                     all(l1);

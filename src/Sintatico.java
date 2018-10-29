@@ -37,7 +37,7 @@ public class Sintatico {
             tokenAtual = tokens.getFirst();
     }
     
-    private void valor() throws NovaException{
+    private void raiz() throws NovaException{
         if (tokenAtual.getId().equals("NUMERICO")){
             proxToken();
         }else if (tokenAtual.getId().equals("ID")){
@@ -59,7 +59,7 @@ public class Sintatico {
         }
     }
     
-    private boolean e_valor(String compara) throws NovaException{
+    private boolean e_raiz(String compara) throws NovaException{
         if (compara.equals("NUMERICO") || compara.equals("ID")){
             return true;
         }else{
@@ -80,7 +80,7 @@ public class Sintatico {
     private void virgula_ID() throws NovaException{
         if (tokenAtual.getId().equals(Token.VIRGULA)){
             proxToken();
-            valor();
+            raiz();
         }else{
             pontovirgula();
         }
@@ -202,7 +202,7 @@ public class Sintatico {
             proxToken();
         }else{
             throw new NovaException("Erro 2: Símbolo "
-                    + tokenAtual.getId() + " inesperado. Esperando: 'ID'. "
+                    + tokenAtual.getId() + " inesperado. Esperando: 'INTEGER, STRING ou REAL'. "
                     + "Linha: " + tokenAtual.getPos());
         }
     }
@@ -247,7 +247,7 @@ public class Sintatico {
     private void all() throws NovaException{
         proxToken();
         abre_parenteses();
-            valor();
+            raiz();
             while (!tokenAtual.getId().equals(")")) {                    
                 virgula_ID();
             }
@@ -297,9 +297,7 @@ public class Sintatico {
         }
     }
     
-    private void repeat_() throws NovaException{ //repeat <comando> until (<expr_relacional>);
-        Nodulo expressaoAtual = new Nodulo(null);
-        
+    private void repeat_() throws NovaException{ //repeat <comando> until (<expr_relacional>);       
         proxToken();
         comando();
         until_();
@@ -322,69 +320,69 @@ public class Sintatico {
     
     private Nodulo expr_relacional() throws NovaException{ 
     //<val> <op_relacionais> <val> | (<expr_relacional>) [<op_booleanos> (<expr_relacional>)] ?
-        Nodulo current = new Nodulo(null);
+        Nodulo arvore = new Nodulo(null);
     
-        if(e_valor(tokenAtual.getId())){
-            current.esq = new Nodulo(tokenAtual);
-            valor();
-            current.valor = tokenAtual;
+        if(e_raiz(tokenAtual.getId())){
+            arvore.esq = new Nodulo(tokenAtual);
+            raiz();
+            arvore.raiz = tokenAtual;
             op_relacionais();
-            current.dir = new Nodulo(tokenAtual);
-            valor();
+            arvore.dir = new Nodulo(tokenAtual);
+            raiz();
             
-            return current;
+            return arvore;
         }else{
             abre_parenteses();
-                current.esq = expr_relacional();
+                arvore.esq = expr_relacional();
             fecha_parenteses();
             if (tokenAtual.getId().equals(Token.AND) || tokenAtual.getId().equals(Token.OR)) {
-                current.valor = tokenAtual;               
+                arvore.raiz = tokenAtual;               
                 proxToken();
                 abre_parenteses();
-                    current.dir = expr_relacional();
+                    arvore.dir = expr_relacional();
                 fecha_parenteses();
             }else{
-                current = current.esq;
+                arvore = arvore.esq;
             }
-            return current;
+            return arvore;
         }       
     }
     
     private Nodulo expr_arit() throws NovaException{ 
     //<val> | <val>  <op_aritmetico> <val> | (<expr_arit> ) <op_aritmetico> (<expr_arit>)
-        Nodulo current = new Nodulo(null);
+        Nodulo arvore = new Nodulo(null);
         Token temp;
     
-        if(e_valor(tokenAtual.getId())){
+        if(e_raiz(tokenAtual.getId())){
             temp = tokenAtual;
             
-            current.valor = temp;
-            valor();
+            arvore.raiz = temp;
+            raiz();
             
             if(tokenAtual.getId().equals(Token.ADD) 
                 || tokenAtual.getId().equals(Token.SUB) 
                 || tokenAtual.getId().equals(Token.DIV) 
                 || tokenAtual.getId().equals(Token.MULT)){
                 
-                current.valor = tokenAtual;
-                current.esq = new Nodulo(temp);
+                arvore.raiz = tokenAtual;
+                arvore.esq = new Nodulo(temp);
                 op_arit();
-                current.dir = new Nodulo (tokenAtual);
-                valor();
+                arvore.dir = new Nodulo (tokenAtual);
+                raiz();
             }
             
-            return current;
+            return arvore;
         }else{
             abre_parenteses();
-                current.esq = expr_arit();
+                arvore.esq = expr_arit();
             fecha_parenteses();
-                current.valor = tokenAtual;
+                arvore.raiz = tokenAtual;
                 op_arit();
             abre_parenteses();
-                current.dir = expr_arit();
+                arvore.dir = expr_arit();
             fecha_parenteses();
             
-            return current;
+            return arvore;
         }
     }
     
@@ -416,19 +414,19 @@ public class Sintatico {
         }
     }
     
-    private void PercorreArvoreE_D_R(Nodulo node) {
-        if (node != null) {
-            PercorreArvoreE_D_R(node.esq);
-            PercorreArvoreE_D_R(node.dir);
-            //expressao = expressao.concat(node.valor + " ");
+    private void PercorreArvoreE_D_R(Nodulo arvore) {
+        if (arvore != null) {
+            PercorreArvoreE_D_R(arvore.esq);
+            PercorreArvoreE_D_R(arvore.dir);
+            //expressao = expressao.concat(arvore.raiz + " ");
         }
     }
     
-    private void PercorreArvoreE_R_D(Nodulo node) {
-        if (node != null) {
-            PercorreArvoreE_R_D(node.esq);
-            //expressao = expressao.concat(node.valor + " ");
-            PercorreArvoreE_R_D(node.dir);
+    private void PercorreArvoreE_R_D(Nodulo arvore) {
+        if (arvore != null) {
+            PercorreArvoreE_R_D(arvore.esq);
+            //expressao = expressao.concat(arvore.raiz + " ");
+            PercorreArvoreE_R_D(arvore.dir);
         }
     }
 }
