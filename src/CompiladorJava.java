@@ -7,14 +7,16 @@ public class CompiladorJava {
      */
     public static void main(String[] args) {                    
         String nome;
-        Scanner sc;
-        sc = new Scanner();
+        
         
         do{            
             nome = JOptionPane.showInputDialog("Informe o nome do arquivo de texto:");            
             if (nome != null){
                 nome = nome.concat(".txt");
                 try{
+                    Scanner sc;
+                    sc = new Scanner();
+                    
                     sc.SCANNER(nome);
                 }catch (IOException e){
                     JOptionPane.showMessageDialog(null, "Erro na abertura do arquivo, tente novamente!");
