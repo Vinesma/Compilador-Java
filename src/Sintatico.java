@@ -1,28 +1,30 @@
 import java.util.LinkedList;
 
 public class Sintatico {
-    LinkedList<Token> tokens;
-    LinkedList<Nodulo> exp_AritmeticasList  = new LinkedList<>();
-    LinkedList<Nodulo> exp_RelacionaisList  = new LinkedList<>();
-    LinkedList<String> VariaveisStringList  = new LinkedList<>();
-    LinkedList<String> VariaveisIntegerList = new LinkedList<>();
-    LinkedList<String> VariaveisRealList    = new LinkedList<>();
-    Token tokenAtual;
+    private LinkedList<Token> tokens;
+    private LinkedList<Nodulo> expressoesList  = new LinkedList<>();
+    private LinkedList<String> variaveisStringList  = new LinkedList<>();
+    private LinkedList<String> variaveisIntegerList = new LinkedList<>();
+    private LinkedList<String> variaveisRealList    = new LinkedList<>();
+    private Token tokenAtual;
     
     public void PARSER(LinkedList<Token> tokenFila) throws NovaException{
         this.tokens = tokenFila;
         tokenAtual = this.tokens.getFirst();
-        
+        Semantico sem;
+                
         program_();     //Programa  <id> ;
         while (!tokenAtual.getId().equals(Token.BEGIN)){
             decl_var(); //[ <decl_var> ]*
         }
         begin_();       //Begin
-            bloco();    //Begin [<comando>  [ <comando>]*]? End ;
+        bloco();    //Begin [<comando>  [ <comando>]*]? End ;
+        sem = new Semantico(expressoesList,
+                            variaveisStringList,
+                            variaveisIntegerList,
+                            variaveisRealList);
         end_();         //End
-        ponto();        //.
-        
-        //SEMANTICO; chamar a expressao do semantico aqui
+        ponto();        //.        
     }
     
     private void proxToken(){
@@ -172,31 +174,31 @@ public class Sintatico {
     private void decl_var() throws NovaException{
         if (tokenAtual.getId().equals(Token.INTEGER)){
             proxToken();
-            VariaveisIntegerList.add(tokenAtual.getLexema());
+            variaveisIntegerList.add(tokenAtual.getLexema());
             id_();            
             while(!tokenAtual.getId().equals(";")){
                 virgula();
-                VariaveisIntegerList.add(tokenAtual.getLexema());
+                variaveisIntegerList.add(tokenAtual.getLexema());
                 id_();
             }
             proxToken();
         }else if(tokenAtual.getId().equals(Token.REAL)){
             proxToken();
-            VariaveisRealList.add(tokenAtual.getLexema());
+            variaveisRealList.add(tokenAtual.getLexema());
             id_();
             while(!tokenAtual.getId().equals(";")){
                 virgula();
-                VariaveisRealList.add(tokenAtual.getLexema());
+                variaveisRealList.add(tokenAtual.getLexema());
                 id_();
             }
             proxToken();
         }else if(tokenAtual.getId().equals(Token.STRING)){
             proxToken();
-            VariaveisStringList.add(tokenAtual.getLexema());
+            variaveisStringList.add(tokenAtual.getLexema());
             id_();
             while(!tokenAtual.getId().equals(";")){
                 virgula();
-                VariaveisStringList.add(tokenAtual.getLexema());
+                variaveisStringList.add(tokenAtual.getLexema());
                 id_();
             }
             proxToken();
@@ -231,10 +233,15 @@ public class Sintatico {
     }
     
     private void comando_basico() throws NovaException{ //<atribuicao> | <bloco> | All ( <id>  [, <id>]* );
-        if (tokenAtual.getId().equals("ID")){ //<id> := <expr_arit> ;           
+        Nodulo temp = new Nodulo(null);
+        
+        if (tokenAtual.getId().equals("ID")){ //<id> := <expr_arit> ;
+            temp.esq = new Nodulo(tokenAtual);
             proxToken();
+            temp.raiz = tokenAtual;
             doispontos_igual();
-                exp_AritmeticasList.add(expr_arit());
+                temp.dir = expr_arit();
+                expressoesList.add(temp);
             pontovirgula();
             proxToken();
         }else if(tokenAtual.getId().equals(Token.ALL)){
@@ -256,10 +263,14 @@ public class Sintatico {
         proxToken();
     }
     
-    private void if_() throws NovaException{ //if (<expr_relacional>) then <comando> [else <comando>]?       
+    private void if_() throws NovaException{ //if (<expr_relacional>) then <comando> [else <comando>]?
+        Nodulo temp = new Nodulo(null);
+        temp.raiz = tokenAtual;
+        
         proxToken();
         abre_parenteses();
-            exp_RelacionaisList.add(expr_relacional());
+            temp.dir = expr_relacional();
+            expressoesList.add(temp);
         fecha_parenteses();
         then_();
         comando();
@@ -278,10 +289,14 @@ public class Sintatico {
         }
     }
     
-    private void while_() throws NovaException{ //while (<expr_relacional>) do <comando>       
+    private void while_() throws NovaException{ //while (<expr_relacional>) do <comando>
+        Nodulo temp = new Nodulo(null);
+        temp.raiz = tokenAtual;
+        
         proxToken();
         abre_parenteses();
-            exp_RelacionaisList.add(expr_relacional());
+            temp.dir = expr_relacional();
+            expressoesList.add(temp);
         fecha_parenteses();
         do_();
         comando();
@@ -297,12 +312,16 @@ public class Sintatico {
         }
     }
     
-    private void repeat_() throws NovaException{ //repeat <comando> until (<expr_relacional>);       
+    private void repeat_() throws NovaException{ //repeat <comando> until (<expr_relacional>);
+        Nodulo temp = new Nodulo(null);
+        temp.raiz = tokenAtual;
+        
         proxToken();
         comando();
         until_();
         abre_parenteses();
-            exp_RelacionaisList.add(expr_relacional());
+            temp.dir = expr_relacional();
+            expressoesList.add(temp);
         fecha_parenteses();
         pontovirgula();
         proxToken();
@@ -411,22 +430,6 @@ public class Sintatico {
             throw new NovaException("Erro 7: Operador "
                     + tokenAtual.getId() + " invalido. Esperando: 'Operador relacional'. "
                     + "Linha: " + tokenAtual.getPos());
-        }
-    }
-    
-    private void PercorreArvoreE_D_R(Nodulo arvore) {
-        if (arvore != null) {
-            PercorreArvoreE_D_R(arvore.esq);
-            PercorreArvoreE_D_R(arvore.dir);
-            //expressao = expressao.concat(arvore.raiz + " ");
-        }
-    }
-    
-    private void PercorreArvoreE_R_D(Nodulo arvore) {
-        if (arvore != null) {
-            PercorreArvoreE_R_D(arvore.esq);
-            //expressao = expressao.concat(arvore.raiz + " ");
-            PercorreArvoreE_R_D(arvore.dir);
         }
     }
 }
