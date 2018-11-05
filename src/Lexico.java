@@ -3,7 +3,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
 
-public class Scanner {
+public class Lexico {
         
     private LinkedList<Token> tokenFila = new LinkedList<Token>();
     private Token token;
@@ -135,10 +135,10 @@ public class Scanner {
             }                    
         }            
         //DEBUG
-        for (int i = 0; i < tokenFila.size(); i++) {
-            System.out.println("Num:" + i);
-            tokenFila.get(i).dados();
-        }
+        /*for (int i = 0; i < tokenFila.size(); i++) {
+        System.out.println("Num:" + i);
+        tokenFila.get(i).dados();
+        }*/
         
         Sintatico sint;
         sint = new Sintatico();

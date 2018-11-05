@@ -40,6 +40,7 @@ public class Sintatico {
                             variaveisStringList,
                             variaveisIntegerList,
                             variaveisRealList);
+        sem.SEMANTICS();
         end_();         //End
         ponto();        //.
         

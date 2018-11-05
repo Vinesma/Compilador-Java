@@ -14,8 +14,8 @@ public class CompiladorJava {
             if (nome != null){
                 nome = nome.concat(".txt");
                 try{
-                    Scanner sc;
-                    sc = new Scanner();
+                    Lexico sc;
+                    sc = new Lexico();
                     
                     sc.SCANNER(nome);
                 }catch (IOException e){
