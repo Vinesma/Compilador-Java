@@ -10,6 +10,7 @@ import java.io.File;
 public class Sintatico {
     private LinkedList<Token> tokens;
     private LinkedList<Nodulo> expressoesList  = new LinkedList<>();
+    private LinkedList<String> stringExpressoesList  = new LinkedList<>();
     private LinkedList<String> variaveisStringList  = new LinkedList<>();
     private LinkedList<String> variaveisIntegerList = new LinkedList<>();
     private LinkedList<String> variaveisRealList    = new LinkedList<>();
@@ -40,7 +41,12 @@ public class Sintatico {
                             variaveisStringList,
                             variaveisIntegerList,
                             variaveisRealList);
-        sem.SEMANTICS();
+        stringExpressoesList = sem.SEMANTICS();
+        while(!stringExpressoesList.isEmpty()){
+            gravaLinha();
+            gravarArq.printf(" " + stringExpressoesList.pop());
+            pulaLinha();
+        }
         end_();         //End
         ponto();        //.
         
@@ -158,6 +164,8 @@ public class Sintatico {
     private void ponto() throws NovaException{
         if (tokenAtual.getId().equals(Token.PONTO)){
             proxToken();
+            gravaLinha();
+            gravarArq.printf(" FIM");
         }else{
             throw new NovaException("Erro 2: Símbolo "
                     + tokenAtual.getId() + " inesperado. Esperando: '.'. "

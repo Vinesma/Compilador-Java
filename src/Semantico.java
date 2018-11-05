@@ -6,8 +6,8 @@ public class Semantico {
     private LinkedList<String> variaveisIntegerList = new LinkedList<>();
     private LinkedList<String> variaveisRealList    = new LinkedList<>();
     private LinkedList<String> stringExpressoesList = new LinkedList<>();
-    //private String temp = "";
-    private int cont = 0;
+    private String expressaoAtual = "";
+    private int cont = 1;
     
     public Semantico(LinkedList<Nodulo> out_expList,
                      LinkedList<String> out_VariaveisSList,
@@ -24,59 +24,59 @@ public class Semantico {
         String temp = "";
         
         while (!expressoesList.isEmpty()) {           
-            if(expressoesList.peekFirst().raiz.getId().equals(":=")){
-                System.out.println("ARITMETICA");
-                temp = temp.concat(expressoesList.peekFirst().esq.raiz.getId() + " " + expressoesList.peekFirst().raiz.getId());
-                stringExpressoesList.add(PercorreArvoreE_D_R(expressoesList.pop().dir));
-                stringExpressoesList.add(temp);
+            if(expressoesList.peekFirst().raiz.getId().equals(":=")){                
+                temp = temp.concat(expressoesList.peekFirst().esq.raiz.getLexema() + " " + expressoesList.peekFirst().raiz.getId());
+                if(!temFolhas(expressoesList.peek().dir)){
+                    if(expressoesList.peek().dir.raiz.getId().equals("NUMERICO")){
+                        temp = temp.concat(" " + expressoesList.pop().dir.raiz.getValor());
+                    }else{
+                        temp = temp.concat(" " + expressoesList.pop().dir.raiz.getLexema());
+                    }
+                    stringExpressoesList.add(temp);
+                    temp = "";
+                }else{
+                    PercorreArvore(expressoesList.pop().dir);
+                    temp = temp.concat(" TMP#" + Integer.toString(cont - 1));
+                    stringExpressoesList.add(temp);
+                    temp = "";
+                }
             }else{
-                System.out.println("RELACIONAL");
-                PercorreArvoreE_D_R(expressoesList.pop().dir);
+                PercorreArvore(expressoesList.pop().dir);
+                stringExpressoesList.add("IF NOT TMP#" + Integer.toString(cont - 1) + " GOTO");
             }
         }
         return stringExpressoesList;
     }
     
-    private String PercorreArvoreE_D_R(Nodulo arvore) {
-        String temp = "";
-        
-        if (arvore != null) {
-            PercorreArvoreE_D_R(arvore.esq);
-            PercorreArvoreE_D_R(arvore.dir);
-            
-            if(arvore.raiz.getLexema().equals("")){               
-                if(arvore.raiz.getId().equals("NUMERICO")){
-                    temp = temp.concat(Integer.toString(arvore.raiz.getValor()));                   
-                    arvore = null;
-                    return temp;
-                }else{
-                    temp = temp.concat(arvore.raiz.getId());
-                    arvore = null;
-                    return temp;
-                }
+    private void PercorreArvore(Nodulo arvore) {
+        if(temFolhas(arvore)){
+            if(temFolhas(arvore.esq) || temFolhas(arvore.dir)){
+                PercorreArvore(arvore.esq);
+                PercorreArvore(arvore.dir);
+                PercorreArvore(arvore);
             }else{
-                System.out.println(arvore.raiz.getLexema());
-                return temp;
+                if(!arvore.esq.raiz.getId().equals("NUMERICO")){
+                    expressaoAtual = expressaoAtual.concat(arvore.esq.raiz.getLexema());
+                }else{
+                    expressaoAtual = expressaoAtual.concat(Integer.toString(arvore.esq.raiz.getValor()));
+                }
+                expressaoAtual = expressaoAtual.concat(" " + arvore.raiz.getId() + " ");
+                if(!arvore.dir.raiz.getId().equals("NUMERICO")){
+                    expressaoAtual = expressaoAtual.concat(arvore.dir.raiz.getLexema());
+                }else{
+                    expressaoAtual = expressaoAtual.concat(Integer.toString(arvore.dir.raiz.getValor()));
+                }
+                arvore.raiz = new Token(expressaoAtual ,"TMP#" + Integer.toString(cont),arvore.raiz.getPos());
+                stringExpressoesList.add(arvore.raiz.getLexema() + " := " + expressaoAtual);
+                expressaoAtual = "";
+                arvore.esq = null;
+                arvore.dir = null;
+                cont++;
             }
         }
-        return temp;
     }
     
-    private void PercorreArvoreE_R_D(Nodulo arvore) {
-        if (arvore != null) {
-            PercorreArvoreE_R_D(arvore.esq);
-            
-            if(arvore.raiz.getLexema().equals("")){               
-                if(arvore.raiz.getId().equals("NUMERICO")){
-                    System.out.println(arvore.raiz.getValor());
-                }else{
-                    System.out.println(arvore.raiz.getId());
-                }
-            }else{
-                System.out.println(arvore.raiz.getLexema());
-            }
-            //expressao = expressao.concat(arvore.raiz + " ");
-            PercorreArvoreE_R_D(arvore.dir);
-        }
+    private boolean temFolhas(Nodulo arvore){
+        return !(arvore.esq == null && arvore.dir == null);
     }
 }

@@ -7,8 +7,7 @@ public class CompiladorJava {
      */
     public static void main(String[] args) {                    
         String nome;
-        
-        
+                
         do{            
             nome = JOptionPane.showInputDialog("Informe o nome do arquivo de texto:");            
             if (nome != null){
