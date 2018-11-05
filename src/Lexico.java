@@ -135,15 +135,15 @@ public class Lexico {
             }                    
         }            
         //DEBUG
-        /*for (int i = 0; i < tokenFila.size(); i++) {
+        for (int i = 0; i < tokenFila.size(); i++) {
         System.out.println("Num:" + i);
         tokenFila.get(i).dados();
-        }*/
+        }
         
         Sintatico sint;
         sint = new Sintatico();
         
-        sint.PARSER(tokenFila, arquivo);        
+        sint.PARSER(tokenFila, arquivo);    
     }
     
     private boolean ehValido(String str){ //verifica se existe um digito no primeiro caractere da string        

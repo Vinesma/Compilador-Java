@@ -1,7 +1,7 @@
 Program teste;
 	Integer x, y, zz1, R4, r1; real zz2;
 	real i1, i2;
-	String l1;
+	String l1, lex, l1;
 Begin
 	Begin
 		i1 := ((i2 - 10) * (2 + 5)) / (9);
@@ -12,12 +12,11 @@ Begin
 		if (( x > 20) and  ((y < 10) or (2 < x))) then
                 begin
                     y := 20;    
-                    All (l1);
-                    All (x2);
+                    All (l1, lex);
                     x := 10;
                 end;
                 while(x < 4) do
-                    All(x2);                   
+                    All(l1);                   
                 repeat
                     all(l1);
                 until(x < y);

@@ -1,7 +1,6 @@
 import java.util.LinkedList;
 
 public class Semantico {
-    private LinkedList<Nodulo> expressoesList  = new LinkedList<>();
     private LinkedList<String> variaveisStringList  = new LinkedList<>();
     private LinkedList<String> variaveisIntegerList = new LinkedList<>();
     private LinkedList<String> variaveisRealList    = new LinkedList<>();
@@ -9,43 +8,90 @@ public class Semantico {
     private String expressaoAtual = "";
     private int cont = 1;
     
-    public Semantico(LinkedList<Nodulo> out_expList,
-                     LinkedList<String> out_VariaveisSList,
+    public Semantico(LinkedList<String> out_VariaveisSList,
                      LinkedList<String> out_VariaveisIList,
                      LinkedList<String> out_VariaveisRList) throws NovaException{
         
-        this.expressoesList = out_expList;
         this.variaveisStringList = out_VariaveisSList;
         this.variaveisIntegerList = out_VariaveisIList;
         this.variaveisRealList = out_VariaveisRList;
-    }
-    
-    public LinkedList<String> SEMANTICS() throws NovaException{
-        String temp = "";
         
-        while (!expressoesList.isEmpty()) {           
-            if(expressoesList.peekFirst().raiz.getId().equals(":=")){                
-                temp = temp.concat(expressoesList.peekFirst().esq.raiz.getLexema() + " " + expressoesList.peekFirst().raiz.getId());
-                if(!temFolhas(expressoesList.peek().dir)){
-                    if(expressoesList.peek().dir.raiz.getId().equals("NUMERICO")){
-                        temp = temp.concat(" " + expressoesList.pop().dir.raiz.getValor());
-                    }else{
-                        temp = temp.concat(" " + expressoesList.pop().dir.raiz.getLexema());
-                    }
-                    stringExpressoesList.add(temp);
-                    temp = "";
-                }else{
-                    PercorreArvore(expressoesList.pop().dir);
-                    temp = temp.concat(" TMP#" + Integer.toString(cont - 1));
-                    stringExpressoesList.add(temp);
-                    temp = "";
-                }
-            }else{
-                PercorreArvore(expressoesList.pop().dir);
-                stringExpressoesList.add("IF NOT TMP#" + Integer.toString(cont - 1) + " GOTO");
+        for (int i = 0; i < variaveisStringList.size(); i++) {
+            boolean temp = false;
+            
+            if(variaveisStringList.contains(variaveisStringList.get(i)) && temp == false){
+                temp = true;
+            }else if(variaveisStringList.contains(variaveisStringList.get(i)) && temp == true){
+                throw new NovaException("ERRO 6: Variavel declarada em duplicidade: '" + variaveisStringList.get(i) + "'");
+            }
+            if(variaveisIntegerList.contains(variaveisStringList.get(i))){
+                throw new NovaException("ERRO 6: Variavel declarada em duplicidade: '" + variaveisStringList.get(i) + "'");
+            }
+            if(variaveisRealList.contains(variaveisStringList.get(i))) {
+                throw new NovaException("ERRO 6: Variavel declarada em duplicidade: '" + variaveisStringList.get(i) + "'");
             }
         }
+    }
+    
+    public LinkedList<String> SEMANTICS(Nodulo out_exp) throws NovaException{
+        String temp = "";
+        
+        stringExpressoesList.clear();
+        if(out_exp.raiz.getId().equals(":=")){                
+            temp = temp.concat(out_exp.esq.raiz.getLexema() + " " + out_exp.raiz.getId());
+            if(!temFolhas(out_exp.dir)){
+                if(out_exp.dir.raiz.getId().equals("NUMERICO")){
+                    temp = temp.concat(" " + out_exp.dir.raiz.getValor());
+                }else{
+                    temp = temp.concat(" " + out_exp.dir.raiz.getLexema());
+                }
+                stringExpressoesList.add(temp);
+                temp = "";
+            }else{
+                PercorreArvore(out_exp.dir);
+                temp = temp.concat(" TMP#" + Integer.toString(cont - 1));
+                stringExpressoesList.add(temp);
+                temp = "";
+            }
+        }else{
+            PercorreArvore(out_exp.dir);
+                stringExpressoesList.add("IF NOT TMP#" + Integer.toString(cont - 1) + " GOTO");
+            }
         return stringExpressoesList;
+    }
+    
+    public void SEMANTICS_CHECK_ALL(Token tokenAtual) throws NovaException{
+        if(!variaveisStringList.contains(tokenAtual.getLexema())){
+            if(variaveisIntegerList.contains(tokenAtual.getLexema())){
+                throw new NovaException("ERRO 3: Tipos incompatíveis <String> e <Integer>, linha: " + tokenAtual.getPos());
+            }else if(variaveisRealList.contains(tokenAtual.getLexema())){
+                throw new NovaException("ERRO 3: Tipos incompatíveis <String> e <Real>, linha: " + tokenAtual.getPos());
+            }else{
+                throw new NovaException("ERRO 4: Identificador nao declarado: '" 
+                            + tokenAtual.getLexema() + "', linha: " + tokenAtual.getPos());
+            }
+        }
+    }
+    
+    private void SEMANTICS_CHECK_ERRO4(Token tokenAtual) throws NovaException{
+        if(!variaveisStringList.contains(tokenAtual.getLexema())){
+            if(!variaveisIntegerList.contains(tokenAtual.getLexema())){
+                if(!variaveisRealList.contains(tokenAtual.getLexema())){
+                    throw new NovaException("ERRO 4: Identificador nao declarado: '" 
+                            + tokenAtual.getLexema() + "', linha: " + tokenAtual.getPos());
+                }
+            }
+        }
+    }
+    
+    private void SEMANTICS_CHECK_ERRO6(Token tokenAtual) throws NovaException{
+        if(variaveisStringList.contains(tokenAtual.getLexema())){
+            throw new NovaException("ERRO 6: Variavel declarada em duplicidade: '"+ tokenAtual.getLexema() + "', linha: " + tokenAtual.getPos());
+        }else if(variaveisIntegerList.contains(tokenAtual.getLexema())){
+            throw new NovaException("ERRO 6: Variavel declarada em duplicidade: '"+ tokenAtual.getLexema() + "', linha: " + tokenAtual.getPos());    
+        }else if(variaveisRealList.contains(tokenAtual.getLexema())){
+            throw new NovaException("ERRO 6: Variavel declarada em duplicidade: '"+ tokenAtual.getLexema() + "', linha: " + tokenAtual.getPos());
+        }
     }
     
     private void PercorreArvore(Nodulo arvore) {
