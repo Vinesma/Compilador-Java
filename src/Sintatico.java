@@ -1,4 +1,11 @@
 import java.util.LinkedList;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
+import javax.swing.JOptionPane;
+import java.awt.Desktop;
+import java.io.File;
 
 public class Sintatico {
     private LinkedList<Token> tokens;
@@ -7,12 +14,22 @@ public class Sintatico {
     private LinkedList<String> variaveisIntegerList = new LinkedList<>();
     private LinkedList<String> variaveisRealList    = new LinkedList<>();
     private Token tokenAtual;
+    private int linha = 1;
+    private FileWriter arq;
+    private PrintWriter gravarArq;
     
-    public void PARSER(LinkedList<Token> tokenFila) throws NovaException{
+    Scanner ler = new Scanner(System.in);
+
+    
+    public void PARSER(LinkedList<Token> tokenFila, String arquivo) throws NovaException, IOException{
         this.tokens = tokenFila;
         tokenAtual = this.tokens.getFirst();
-        Semantico sem;
-                
+        Semantico sem;       
+        
+        arquivo = arquivo.replaceAll(".txt", "");       
+        arq = new FileWriter(arquivo + "_compilado.txt");                             
+        gravarArq = new PrintWriter(arq);
+        
         program_();     //Programa  <id> ;
         while (!tokenAtual.getId().equals(Token.BEGIN)){
             decl_var(); //[ <decl_var> ]*
@@ -24,7 +41,21 @@ public class Sintatico {
                             variaveisIntegerList,
                             variaveisRealList);
         end_();         //End
-        ponto();        //.        
+        ponto();        //.
+        
+        arq.close();
+        JOptionPane.showMessageDialog(null, "Arquivo compilado com sucesso! "
+                    + "Seu arquivo compilado foi criado: " + arquivo + "_compilado.txt");
+        
+        if (Desktop.isDesktopSupported()) {
+            try {
+                Desktop desktop = Desktop.getDesktop();
+                File arquivoCriado = new File(arquivo + "_compilado.txt");
+                desktop.open(arquivoCriado);
+            }catch (IOException e){
+            
+            }
+        }
     }
     
     private void proxToken(){
@@ -53,6 +84,7 @@ public class Sintatico {
     
     private void id_() throws NovaException{
         if (tokenAtual.getId().equals("ID")){
+            gravaToken();
             proxToken();
         }else{
             throw new NovaException("Erro 2: Símbolo "
@@ -90,6 +122,7 @@ public class Sintatico {
     
     private void virgula() throws NovaException{
         if (tokenAtual.getId().equals(Token.VIRGULA)){
+            gravaToken();
             proxToken();
         }else{
             throw new NovaException("Erro 2: Símbolo "
@@ -100,6 +133,9 @@ public class Sintatico {
     
     private void begin_() throws NovaException{
         if (tokenAtual.getId().equals(Token.BEGIN)){
+            gravaLinha();
+            gravaToken();
+            pulaLinha();
             proxToken();
         }else{
             throw new NovaException("Erro 2: Símbolo "
@@ -160,9 +196,12 @@ public class Sintatico {
     
     private void program_() throws NovaException{
         if (tokenAtual.getId().equals(Token.PROGRAM)){
-            proxToken();
+            gravaLinha();
+            gravaToken();
+            proxToken();           
             id_();
             pontovirgula();
+            pulaLinha();
             proxToken();
         }else{
             throw new NovaException("Erro 2: Símbolo "
@@ -173,6 +212,8 @@ public class Sintatico {
     
     private void decl_var() throws NovaException{
         if (tokenAtual.getId().equals(Token.INTEGER)){
+            gravaLinha();
+            gravaToken();
             proxToken();
             variaveisIntegerList.add(tokenAtual.getLexema());
             id_();            
@@ -181,8 +222,11 @@ public class Sintatico {
                 variaveisIntegerList.add(tokenAtual.getLexema());
                 id_();
             }
+            pulaLinha();
             proxToken();
         }else if(tokenAtual.getId().equals(Token.REAL)){
+            gravaLinha();
+            gravaToken();
             proxToken();
             variaveisRealList.add(tokenAtual.getLexema());
             id_();
@@ -191,8 +235,11 @@ public class Sintatico {
                 variaveisRealList.add(tokenAtual.getLexema());
                 id_();
             }
+            pulaLinha();
             proxToken();
         }else if(tokenAtual.getId().equals(Token.STRING)){
+            gravaLinha();
+            gravaToken();
             proxToken();
             variaveisStringList.add(tokenAtual.getLexema());
             id_();
@@ -201,6 +248,7 @@ public class Sintatico {
                 variaveisStringList.add(tokenAtual.getLexema());
                 id_();
             }
+            pulaLinha();
             proxToken();
         }else{
             throw new NovaException("Erro 2: Símbolo "
@@ -430,6 +478,31 @@ public class Sintatico {
             throw new NovaException("Erro 7: Operador "
                     + tokenAtual.getId() + " invalido. Esperando: 'Operador relacional'. "
                     + "Linha: " + tokenAtual.getPos());
+        }
+    }
+    
+    private void pulaLinha(){
+        gravarArq.printf("%n");
+        linha++;
+    }
+    
+    private void gravaLinha(){
+        if(linha < 10){
+            gravarArq.printf("000" + Integer.toString(linha) + ":");
+        }else if(linha < 100){
+            gravarArq.printf("00" + Integer.toString(linha) + ":");
+        }else if(linha < 1000){
+            gravarArq.printf("0" + Integer.toString(linha) + ":");
+        }else{
+            gravarArq.printf(Integer.toString(linha) + ":");
+        }
+    }
+    
+    private void gravaToken(){
+        if(tokenAtual.getLexema().equals("")){
+            gravarArq.printf(" " + tokenAtual.getId());
+        }else{
+            gravarArq.printf(" " + tokenAtual.getLexema());
         }
     }
 }

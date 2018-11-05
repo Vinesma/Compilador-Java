@@ -143,7 +143,7 @@ public class Scanner {
         Sintatico sint;
         sint = new Sintatico();
         
-        sint.PARSER(tokenFila);        
+        sint.PARSER(tokenFila, arquivo);        
     }
     
     private boolean ehValido(String str){ //verifica se existe um digito no primeiro caractere da string        
