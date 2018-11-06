@@ -1,9 +1,9 @@
 import java.util.LinkedList;
 
 public class Semantico {
-    private LinkedList<Token> variaveisStringList  = new LinkedList<>();
-    private LinkedList<Token> variaveisIntegerList = new LinkedList<>();
-    private LinkedList<Token> variaveisRealList    = new LinkedList<>();
+    private LinkedList<Token> variaveisStringList   = new LinkedList<>();
+    private LinkedList<Token> variaveisIntegerList  = new LinkedList<>();
+    private LinkedList<Token> variaveisRealList     = new LinkedList<>();
     private LinkedList<String> stringExpressoesList = new LinkedList<>();
     private String expressaoAtual = "";
     private int cont = 1;
@@ -28,7 +28,7 @@ public class Semantico {
         String temp = "";
         
         stringExpressoesList.clear();
-        if(out_exp.raiz.getId().equals(":=")){                
+        if(out_exp.raiz.getId().equals(":=")){
             temp = temp.concat(out_exp.esq.raiz.getLexema() + " " + out_exp.raiz.getId());
             if(!temFolhas(out_exp.dir)){
                 if(out_exp.dir.raiz.getId().equals("NUMERICO")){
@@ -56,13 +56,15 @@ public class Semantico {
         
         for (int i = 0; i < variaveisIntegerList.size(); i++) {
             if (tokenAtual.getLexema().equals(variaveisIntegerList.get(i).getLexema())) {
-                throw new NovaException("ERRO 3: Tipos incompatíveis <STRING> e <INTEGER>, linha: " + tokenAtual.getPos());
+                throw new NovaException("ERRO 3: Tipos incompatíveis, a variavel '" 
+                        + tokenAtual.getLexema() + "' nao e <INTEGER>, linha: " + tokenAtual.getPos());
             }
         }
         
         for (int i = 0; i < variaveisRealList.size(); i++) {
             if (tokenAtual.getLexema().equals(variaveisRealList.get(i).getLexema())) {
-                throw new NovaException("ERRO 3: Tipos incompatíveis <STRING> e <REAL>, linha: " + tokenAtual.getPos());
+                throw new NovaException("ERRO 3: Tipos incompatíveis, a variavel '" 
+                        + tokenAtual.getLexema() + "' nao e <REAL>, linha: " + tokenAtual.getPos());
             }
         }
         
@@ -78,7 +80,7 @@ public class Semantico {
         }
     }
     
-    public void SEMANTICS_CHECK_ERRO4(Token tokenAtual) throws NovaException{
+    public void SEMANTICS_CHECK_ERRO3_ERRO4(Token tokenAtual, boolean ehExpressao) throws NovaException{
         boolean variavelExiste1 = false;
         boolean variavelExiste2 = false;
         boolean variavelExiste3 = false;
@@ -94,6 +96,10 @@ public class Semantico {
             if (tokenAtual.getLexema().equals(variaveisStringList.get(i).getLexema())) {
                 variavelExiste2 = true;
                 i = variaveisStringList.size();
+                if(ehExpressao){
+                    throw new NovaException("ERRO 3: Tipos incompativeis, a variavel '" + tokenAtual.getLexema() 
+                            + "' nao e <INTEGER> ou <REAL>, linha: " + tokenAtual.getPos());
+                }
             }
         }
         
@@ -119,7 +125,8 @@ public class Semantico {
         for (int i = 0; i < l1.size(); i++) {
             for (int j = 0; j < l2.size(); j++) {
                 if(l1.get(i).getLexema().equals(l2.get(j).getLexema()) && temp == true){
-                    throw new NovaException("ERRO 6: Variavel '"+ l1.get(i).getLexema() +"' declarada em duplicidade, linha: " + l1.get(i).getPos());
+                    throw new NovaException("ERRO 6: Variavel '"+ l1.get(i).getLexema() 
+                            +"' declarada em duplicidade, linha: " + l1.get(i).getPos());
                 }else if(l1.get(i).getLexema().equals(l2.get(j).getLexema()) && temp == false){
                     temp = true;
                 }
