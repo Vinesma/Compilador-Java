@@ -15,6 +15,13 @@ public class Semantico {
         this.variaveisStringList = out_VariaveisSList;
         this.variaveisIntegerList = out_VariaveisIList;
         this.variaveisRealList = out_VariaveisRList;
+        
+        SEMANTICS_CHECK_ERRO6(variaveisStringList, variaveisRealList);
+        SEMANTICS_CHECK_ERRO6(variaveisStringList, variaveisIntegerList);
+        SEMANTICS_CHECK_ERRO6(variaveisStringList, variaveisStringList);
+        SEMANTICS_CHECK_ERRO6(variaveisRealList, variaveisIntegerList);
+        SEMANTICS_CHECK_ERRO6(variaveisRealList, variaveisRealList);
+        SEMANTICS_CHECK_ERRO6(variaveisIntegerList, variaveisIntegerList);
     }
     
     public LinkedList<String> SEMANTICS(Nodulo out_exp) throws NovaException{
@@ -61,8 +68,24 @@ public class Semantico {
         
     }
     
-    private void SEMANTICS_CHECK_ERRO6(Token tokenAtual) throws NovaException{
+    private void SEMANTICS_CHECK_ERRO6(LinkedList<Token> l1,LinkedList<Token> l2) throws NovaException{
+        boolean temp = true;
+        if(l1 == l2){
+            temp = false;
+        }
         
+        for (int i = 0; i < l1.size(); i++) {
+            for (int j = 0; j < l2.size(); j++) {
+                if(l1.get(i).getLexema().equals(l2.get(j).getLexema()) && temp == true){
+                    throw new NovaException("ERRO 6: Variavel '"+ l1.get(i).getLexema() +"' declarada em duplicidade, linha: " + l1.get(i).getPos());
+                }else if(l1.get(i).getLexema().equals(l2.get(j).getLexema()) && temp == false){
+                    temp = true;
+                }
+            }
+            if(l1 == l2){
+                temp = false;
+            }
+        }
     }
     
     private void PercorreArvore(Nodulo arvore) {
