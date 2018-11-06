@@ -1,7 +1,7 @@
 Program teste;
 	Integer x, y, zz1, R4, r1; real zz2;
 	real i1, i2;
-	String l1, lex, l1;
+	String l1, lex;
 Begin
 	Begin
 		i1 := ((i2 - 10) * (2 + 5)) / (9);
@@ -15,6 +15,10 @@ Begin
                     All (l1, lex);
                     x := 10;
                 end;
+                if(5 > r2)then
+                    h := 2;
+                else
+                    h := 1;
                 while(x < 4) do
                     All(l1);                   
                 repeat

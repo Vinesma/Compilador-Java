@@ -10,9 +10,10 @@ import java.io.File;
 public class Sintatico {
     private LinkedList<Token> tokens;
     private LinkedList<String> stringExpressoesList  = new LinkedList<>();
-    private LinkedList<String> variaveisStringList  = new LinkedList<>();
-    private LinkedList<String> variaveisIntegerList = new LinkedList<>();
-    private LinkedList<String> variaveisRealList    = new LinkedList<>();
+    private LinkedList<Token> variaveisStringList    = new LinkedList<>();
+    private LinkedList<Token> variaveisIntegerList   = new LinkedList<>();
+    private LinkedList<Token> variaveisRealList      = new LinkedList<>();
+    private LinkedList<Integer> linhas_gotoList      = new LinkedList<>();
     private Token tokenAtual;
     private int linha = 1;
     private FileWriter arq;
@@ -207,11 +208,11 @@ public class Sintatico {
             gravaLinha();
             gravaToken();
             proxToken();
-            variaveisIntegerList.add(tokenAtual.getLexema());
+            variaveisIntegerList.add(tokenAtual);
             id_();
             while(!tokenAtual.getId().equals(";")){
                 virgula();
-                variaveisIntegerList.add(tokenAtual.getLexema());
+                variaveisIntegerList.add(tokenAtual);
                 id_();
             }
             pulaLinha();
@@ -220,11 +221,11 @@ public class Sintatico {
             gravaLinha();
             gravaToken();
             proxToken();
-            variaveisRealList.add(tokenAtual.getLexema());
+            variaveisRealList.add(tokenAtual);
             id_();
             while(!tokenAtual.getId().equals(";")){
                 virgula();
-                variaveisRealList.add(tokenAtual.getLexema());
+                variaveisRealList.add(tokenAtual);
                 id_();
             }
             pulaLinha();
@@ -233,11 +234,11 @@ public class Sintatico {
             gravaLinha();
             gravaToken();
             proxToken();
-            variaveisStringList.add(tokenAtual.getLexema());
+            variaveisStringList.add(tokenAtual);
             id_();
             while(!tokenAtual.getId().equals(";")){
                 virgula();
-                variaveisStringList.add(tokenAtual.getLexema());
+                variaveisStringList.add(tokenAtual);
                 id_();
             }
             pulaLinha();
@@ -335,6 +336,10 @@ public class Sintatico {
         then_();
         comando(sem);
         if(tokenAtual.getId().equals(Token.ELSE)){
+            gravaLinha();
+            gravarArq.printf(" ELSE");
+            proxToken();
+            pulaLinha();
             comando(sem);
         }
     }
@@ -381,7 +386,10 @@ public class Sintatico {
         Nodulo temp = new Nodulo(null);
         temp.raiz = tokenAtual;
         
+        gravaLinha();
+        gravaToken();
         proxToken();
+        pulaLinha();
         comando(sem);
         until_();
         abre_parenteses();
