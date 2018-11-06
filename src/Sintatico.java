@@ -1,28 +1,61 @@
 import java.util.LinkedList;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
+import javax.swing.JOptionPane;
+import java.awt.Desktop;
+import java.io.File;
 
 public class Sintatico {
-    LinkedList<Token> tokens;
-    LinkedList<Nodulo> exp_AritmeticasList  = new LinkedList<>();
-    LinkedList<Nodulo> exp_RelacionaisList  = new LinkedList<>();
-    LinkedList<String> VariaveisStringList  = new LinkedList<>();
-    LinkedList<String> VariaveisIntegerList = new LinkedList<>();
-    LinkedList<String> VariaveisRealList    = new LinkedList<>();
-    Token tokenAtual;
+    private LinkedList<Token> tokens;
+    private LinkedList<String> stringExpressoesList  = new LinkedList<>();
+    private LinkedList<Token> variaveisStringList    = new LinkedList<>();
+    private LinkedList<Token> variaveisIntegerList   = new LinkedList<>();
+    private LinkedList<Token> variaveisRealList      = new LinkedList<>();
+    private LinkedList<Integer> linhas_gotoList      = new LinkedList<>();
+    private Token tokenAtual;
+    private int linha = 1;
+    private FileWriter arq;
+    private PrintWriter gravarArq;
     
-    public void PARSER(LinkedList<Token> tokenFila) throws NovaException{
+    Scanner ler = new Scanner(System.in);
+
+    
+    public void PARSER(LinkedList<Token> tokenFila, String arquivo) throws NovaException, IOException{
         this.tokens = tokenFila;
         tokenAtual = this.tokens.getFirst();
+        Semantico sem;
+        
+        arquivo = arquivo.replaceAll(".txt", "");       
+        arq = new FileWriter(arquivo + "_compilado.txt");                             
+        gravarArq = new PrintWriter(arq);
         
         program_();     //Programa  <id> ;
         while (!tokenAtual.getId().equals(Token.BEGIN)){
             decl_var(); //[ <decl_var> ]*
         }
+        sem = new Semantico(variaveisStringList,
+                            variaveisIntegerList,
+                            variaveisRealList);
         begin_();       //Begin
-            bloco();    //Begin [<comando>  [ <comando>]*]? End ;
+        bloco(sem);    //Begin [<comando>  [ <comando>]*]? End ;        
         end_();         //End
         ponto();        //.
         
-        //SEMANTICO; chamar a expressao do semantico aqui
+        arq.close();
+        JOptionPane.showMessageDialog(null, "Arquivo compilado com sucesso! "
+                    + "Seu arquivo compilado foi criado: " + arquivo + "_compilado.txt");
+        
+        if (Desktop.isDesktopSupported()) {
+            try {
+                Desktop desktop = Desktop.getDesktop();
+                File arquivoCriado = new File(arquivo + "_compilado.txt");
+                desktop.open(arquivoCriado);
+            }catch (IOException e){
+            
+            }
+        }
     }
     
     private void proxToken(){
@@ -37,7 +70,7 @@ public class Sintatico {
             tokenAtual = tokens.getFirst();
     }
     
-    private void raiz() throws NovaException{
+    private void valor() throws NovaException{
         if (tokenAtual.getId().equals("NUMERICO")){
             proxToken();
         }else if (tokenAtual.getId().equals("ID")){
@@ -51,6 +84,7 @@ public class Sintatico {
     
     private void id_() throws NovaException{
         if (tokenAtual.getId().equals("ID")){
+            gravaToken();
             proxToken();
         }else{
             throw new NovaException("Erro 2: Símbolo "
@@ -59,7 +93,7 @@ public class Sintatico {
         }
     }
     
-    private boolean e_raiz(String compara) throws NovaException{
+    private boolean e_valor(String compara) throws NovaException{
         if (compara.equals("NUMERICO") || compara.equals("ID")){
             return true;
         }else{
@@ -76,18 +110,10 @@ public class Sintatico {
             
         }
     }
-    
-    private void virgula_ID() throws NovaException{
-        if (tokenAtual.getId().equals(Token.VIRGULA)){
-            proxToken();
-            raiz();
-        }else{
-            pontovirgula();
-        }
-    }
-    
+      
     private void virgula() throws NovaException{
         if (tokenAtual.getId().equals(Token.VIRGULA)){
+            gravaToken();
             proxToken();
         }else{
             throw new NovaException("Erro 2: Símbolo "
@@ -98,6 +124,9 @@ public class Sintatico {
     
     private void begin_() throws NovaException{
         if (tokenAtual.getId().equals(Token.BEGIN)){
+            gravaLinha();
+            gravaToken();
+            pulaLinha();
             proxToken();
         }else{
             throw new NovaException("Erro 2: Símbolo "
@@ -119,6 +148,8 @@ public class Sintatico {
     private void ponto() throws NovaException{
         if (tokenAtual.getId().equals(Token.PONTO)){
             proxToken();
+            gravaLinha();
+            gravarArq.printf(" FIM");
         }else{
             throw new NovaException("Erro 2: Símbolo "
                     + tokenAtual.getId() + " inesperado. Esperando: '.'. "
@@ -158,9 +189,12 @@ public class Sintatico {
     
     private void program_() throws NovaException{
         if (tokenAtual.getId().equals(Token.PROGRAM)){
-            proxToken();
+            gravaLinha();
+            gravaToken();
+            proxToken();           
             id_();
             pontovirgula();
+            pulaLinha();
             proxToken();
         }else{
             throw new NovaException("Erro 2: Símbolo "
@@ -171,34 +205,43 @@ public class Sintatico {
     
     private void decl_var() throws NovaException{
         if (tokenAtual.getId().equals(Token.INTEGER)){
+            gravaLinha();
+            gravaToken();
             proxToken();
-            VariaveisIntegerList.add(tokenAtual.getLexema());
-            id_();            
+            variaveisIntegerList.add(tokenAtual);
+            id_();
             while(!tokenAtual.getId().equals(";")){
                 virgula();
-                VariaveisIntegerList.add(tokenAtual.getLexema());
+                variaveisIntegerList.add(tokenAtual);
                 id_();
             }
+            pulaLinha();
             proxToken();
         }else if(tokenAtual.getId().equals(Token.REAL)){
+            gravaLinha();
+            gravaToken();
             proxToken();
-            VariaveisRealList.add(tokenAtual.getLexema());
+            variaveisRealList.add(tokenAtual);
             id_();
             while(!tokenAtual.getId().equals(";")){
                 virgula();
-                VariaveisRealList.add(tokenAtual.getLexema());
+                variaveisRealList.add(tokenAtual);
                 id_();
             }
+            pulaLinha();
             proxToken();
         }else if(tokenAtual.getId().equals(Token.STRING)){
+            gravaLinha();
+            gravaToken();
             proxToken();
-            VariaveisStringList.add(tokenAtual.getLexema());
+            variaveisStringList.add(tokenAtual);
             id_();
             while(!tokenAtual.getId().equals(";")){
                 virgula();
-                VariaveisStringList.add(tokenAtual.getLexema());
+                variaveisStringList.add(tokenAtual);
                 id_();
             }
+            pulaLinha();
             proxToken();
         }else{
             throw new NovaException("Erro 2: Símbolo "
@@ -207,64 +250,97 @@ public class Sintatico {
         }
     }
     
-    private void bloco() throws NovaException{ //Begin [<comando>  [ <comando>]*]? End ;
+    private void bloco(Semantico sem) throws NovaException{ //Begin [<comando>  [ <comando>]*]? End ;
         begin_();
-            comando();
+            comando(sem);
             while (!tokenAtual.getId().equals(Token.END)) {            
-                comando();
+                comando(sem);
             }
         end_();
         pontovirgula();
         proxToken();
     }
     
-    private void comando() throws NovaException{ //<comando_basico> | <iteracao> | if 
+    private void comando(Semantico sem) throws NovaException{ //<comando_basico> | <iteracao> | if 
         if (tokenAtual.getId().equals(Token.IF)){
-            if_();
+            if_(sem);
         }else if(tokenAtual.getId().equals(Token.WHILE)){
-            while_();  
+            while_(sem);  
         }else if(tokenAtual.getId().equals(Token.REPEAT)){
-            repeat_();
+            repeat_(sem);
         }else{
-            comando_basico();  
+            comando_basico(sem);  
         }
     }
     
-    private void comando_basico() throws NovaException{ //<atribuicao> | <bloco> | All ( <id>  [, <id>]* );
-        if (tokenAtual.getId().equals("ID")){ //<id> := <expr_arit> ;           
+    private void comando_basico(Semantico sem) throws NovaException{ //<atribuicao> | <bloco> | All ( <id>  [, <id>]* );
+        Nodulo temp = new Nodulo(null);
+        
+        if (tokenAtual.getId().equals("ID")){ //<id> := <expr_arit> ;
+            temp.esq = new Nodulo(tokenAtual);
             proxToken();
+            temp.raiz = tokenAtual;
             doispontos_igual();
-                exp_AritmeticasList.add(expr_arit());
+                temp.dir = expr_arit();
+                stringExpressoesList = sem.SEMANTICS(temp);
+                while(!stringExpressoesList.isEmpty()){
+                    gravaLinha();
+                    gravarArq.printf(" " + stringExpressoesList.pop());
+                    pulaLinha();
+                }
             pontovirgula();
             proxToken();
         }else if(tokenAtual.getId().equals(Token.ALL)){
-            all();
+            all(sem);
         }else{
-            bloco();
+            bloco(sem);
         }
     }
     
-    private void all() throws NovaException{
+    private void all(Semantico sem) throws NovaException{
+        gravaLinha();
+        gravaToken();
         proxToken();
+        gravaToken();
         abre_parenteses();
-            raiz();
-            while (!tokenAtual.getId().equals(")")) {                    
-                virgula_ID();
+            sem.SEMANTICS_CHECK_ALL(tokenAtual);
+            gravaToken();
+            valor();
+            while (!tokenAtual.getId().equals(")")) {                
+                virgula();                
+                sem.SEMANTICS_CHECK_ALL(tokenAtual);
+                gravaToken();
+                valor();
             }
+        gravaToken();
         fecha_parenteses();
         pontovirgula();
+        pulaLinha();
         proxToken();
     }
     
-    private void if_() throws NovaException{ //if (<expr_relacional>) then <comando> [else <comando>]?       
+    private void if_(Semantico sem) throws NovaException{ //if (<expr_relacional>) then <comando> [else <comando>]?
+        Nodulo temp = new Nodulo(null);
+        temp.raiz = tokenAtual;
+        
         proxToken();
         abre_parenteses();
-            exp_RelacionaisList.add(expr_relacional());
+            temp.dir = expr_relacional();            
+            stringExpressoesList = sem.SEMANTICS(temp);
+            while(!stringExpressoesList.isEmpty()){
+                gravaLinha();
+                gravarArq.printf(" " + stringExpressoesList.pop());
+                pulaLinha();
+            }
         fecha_parenteses();
         then_();
-        comando();
+        comando(sem);
         if(tokenAtual.getId().equals(Token.ELSE)){
-            comando();
+            gravaLinha();
+            gravarArq.printf(" ELSE");
+            proxToken();
+            pulaLinha();
+            comando(sem);
         }
     }
     
@@ -278,13 +354,22 @@ public class Sintatico {
         }
     }
     
-    private void while_() throws NovaException{ //while (<expr_relacional>) do <comando>       
+    private void while_(Semantico sem) throws NovaException{ //while (<expr_relacional>) do <comando>
+        Nodulo temp = new Nodulo(null);
+        temp.raiz = tokenAtual;
+        
         proxToken();
         abre_parenteses();
-            exp_RelacionaisList.add(expr_relacional());
+            temp.dir = expr_relacional();
+            stringExpressoesList = sem.SEMANTICS(temp);
+            while(!stringExpressoesList.isEmpty()){
+                gravaLinha();
+                gravarArq.printf(" " + stringExpressoesList.pop());
+                pulaLinha();
+            }
         fecha_parenteses();
         do_();
-        comando();
+        comando(sem);
     }
     
     private void do_() throws NovaException{
@@ -297,12 +382,24 @@ public class Sintatico {
         }
     }
     
-    private void repeat_() throws NovaException{ //repeat <comando> until (<expr_relacional>);       
+    private void repeat_(Semantico sem) throws NovaException{ //repeat <comando> until (<expr_relacional>);
+        Nodulo temp = new Nodulo(null);
+        temp.raiz = tokenAtual;
+        
+        gravaLinha();
+        gravaToken();
         proxToken();
-        comando();
+        pulaLinha();
+        comando(sem);
         until_();
         abre_parenteses();
-            exp_RelacionaisList.add(expr_relacional());
+            temp.dir = expr_relacional();
+            stringExpressoesList = sem.SEMANTICS(temp);
+            while(!stringExpressoesList.isEmpty()){
+                gravaLinha();
+                gravarArq.printf(" " + stringExpressoesList.pop());
+                pulaLinha();
+            }
         fecha_parenteses();
         pontovirgula();
         proxToken();
@@ -322,13 +419,13 @@ public class Sintatico {
     //<val> <op_relacionais> <val> | (<expr_relacional>) [<op_booleanos> (<expr_relacional>)] ?
         Nodulo arvore = new Nodulo(null);
     
-        if(e_raiz(tokenAtual.getId())){
+        if(e_valor(tokenAtual.getId())){
             arvore.esq = new Nodulo(tokenAtual);
-            raiz();
+            valor();
             arvore.raiz = tokenAtual;
             op_relacionais();
             arvore.dir = new Nodulo(tokenAtual);
-            raiz();
+            valor();
             
             return arvore;
         }else{
@@ -353,11 +450,11 @@ public class Sintatico {
         Nodulo arvore = new Nodulo(null);
         Token temp;
     
-        if(e_raiz(tokenAtual.getId())){
+        if(e_valor(tokenAtual.getId())){
             temp = tokenAtual;
             
             arvore.raiz = temp;
-            raiz();
+            valor();
             
             if(tokenAtual.getId().equals(Token.ADD) 
                 || tokenAtual.getId().equals(Token.SUB) 
@@ -368,7 +465,7 @@ public class Sintatico {
                 arvore.esq = new Nodulo(temp);
                 op_arit();
                 arvore.dir = new Nodulo (tokenAtual);
-                raiz();
+                valor();
             }
             
             return arvore;
@@ -414,19 +511,28 @@ public class Sintatico {
         }
     }
     
-    private void PercorreArvoreE_D_R(Nodulo arvore) {
-        if (arvore != null) {
-            PercorreArvoreE_D_R(arvore.esq);
-            PercorreArvoreE_D_R(arvore.dir);
-            //expressao = expressao.concat(arvore.raiz + " ");
+    private void pulaLinha(){
+        gravarArq.printf("%n");
+        linha++;
+    }
+    
+    private void gravaLinha(){
+        if(linha < 10){
+            gravarArq.printf("000" + Integer.toString(linha) + ":");
+        }else if(linha < 100){
+            gravarArq.printf("00" + Integer.toString(linha) + ":");
+        }else if(linha < 1000){
+            gravarArq.printf("0" + Integer.toString(linha) + ":");
+        }else{
+            gravarArq.printf(Integer.toString(linha) + ":");
         }
     }
     
-    private void PercorreArvoreE_R_D(Nodulo arvore) {
-        if (arvore != null) {
-            PercorreArvoreE_R_D(arvore.esq);
-            //expressao = expressao.concat(arvore.raiz + " ");
-            PercorreArvoreE_R_D(arvore.dir);
+    private void gravaToken(){
+        if(tokenAtual.getLexema().equals("")){
+            gravarArq.printf(" " + tokenAtual.getId());
+        }else{
+            gravarArq.printf(" " + tokenAtual.getLexema());
         }
     }
 }
