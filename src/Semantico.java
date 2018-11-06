@@ -1,10 +1,10 @@
 import java.util.LinkedList;
 
 public class Semantico {
-    private LinkedList<Token> variaveisStringList   = new LinkedList<>();
-    private LinkedList<Token> variaveisIntegerList  = new LinkedList<>();
-    private LinkedList<Token> variaveisRealList     = new LinkedList<>();
-    private LinkedList<String> stringExpressoesList = new LinkedList<>();
+    private LinkedList<Token>  variaveisStringList   = new LinkedList<>();
+    private LinkedList<Token>  variaveisIntegerList  = new LinkedList<>();
+    private LinkedList<Token>  variaveisRealList     = new LinkedList<>();
+    private LinkedList<String> stringExpressoesList  = new LinkedList<>();
     private String expressaoAtual = "";
     private int cont = 1;
     
@@ -52,7 +52,7 @@ public class Semantico {
     }
     
     public void SEMANTICS_CHECK_ALL(Token tokenAtual) throws NovaException{
-        boolean variavelFoiDeclarada = false;
+        boolean variavel_declarada = false;
         
         for (int i = 0; i < variaveisIntegerList.size(); i++) {
             if (tokenAtual.getLexema().equals(variaveisIntegerList.get(i).getLexema())) {
@@ -70,11 +70,11 @@ public class Semantico {
         
         for (int i = 0; i < variaveisStringList.size(); i++) {
             if (tokenAtual.getLexema().equals(variaveisStringList.get(i).getLexema())) {
-                variavelFoiDeclarada = true;
+                variavel_declarada = true;
             }
         }
         
-        if(variavelFoiDeclarada == false){
+        if(variavel_declarada == false){
             throw new NovaException("ERRO 4: Variavel '" 
                     + tokenAtual.getLexema() + "' nao foi declarada, linha: " + tokenAtual.getPos());
         }
@@ -117,7 +117,7 @@ public class Semantico {
     }
     
     private void SEMANTICS_CHECK_ERRO6(LinkedList<Token> l1,LinkedList<Token> l2) throws NovaException{
-        boolean temp = true;
+        boolean temp = true; //usado quando as listas forem iguais
         if(l1 == l2){
             temp = false;
         }

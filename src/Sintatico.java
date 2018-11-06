@@ -15,7 +15,7 @@ public class Sintatico {
     private LinkedList<Token>   variaveisRealList      = new LinkedList<>();
     private LinkedList<Token>   variaveisList          = new LinkedList<>();
     private LinkedList<Boolean> variaveisAuxList       = new LinkedList<>();
-    private LinkedList<Integer> linhas_gotoList      = new LinkedList<>();
+    private LinkedList<Integer> linhas_gotoList        = new LinkedList<>();
     private Token tokenAtual;
     private int linha = 1;
     private FileWriter arq;
