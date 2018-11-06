@@ -13,6 +13,7 @@ public class Sintatico {
     private LinkedList<Token> variaveisStringList    = new LinkedList<>();
     private LinkedList<Token> variaveisIntegerList   = new LinkedList<>();
     private LinkedList<Token> variaveisRealList      = new LinkedList<>();
+    private LinkedList<Token> variaveisList          = new LinkedList<>();
     private LinkedList<Integer> linhas_gotoList      = new LinkedList<>();
     private Token tokenAtual;
     private int linha = 1;
@@ -20,7 +21,6 @@ public class Sintatico {
     private PrintWriter gravarArq;
     
     Scanner ler = new Scanner(System.in);
-
     
     public void PARSER(LinkedList<Token> tokenFila, String arquivo) throws NovaException, IOException{
         this.tokens = tokenFila;
@@ -42,6 +42,10 @@ public class Sintatico {
         bloco(sem);    //Begin [<comando>  [ <comando>]*]? End ;        
         end_();         //End
         ponto();        //.
+        
+        for (int i = 0; i < variaveisList.size(); i++) {
+            sem.SEMANTICS_CHECK_ERRO4(variaveisList.get(i));
+        }
         
         arq.close();
         JOptionPane.showMessageDialog(null, "Arquivo compilado com sucesso! "
@@ -74,6 +78,7 @@ public class Sintatico {
         if (tokenAtual.getId().equals("NUMERICO")){
             proxToken();
         }else if (tokenAtual.getId().equals("ID")){
+            variaveisList.add(tokenAtual);
             proxToken();
         }else{
             throw new NovaException("Erro 2: Símbolo "
@@ -84,6 +89,7 @@ public class Sintatico {
     
     private void id_() throws NovaException{
         if (tokenAtual.getId().equals("ID")){
+            variaveisList.add(tokenAtual);
             gravaToken();
             proxToken();
         }else{
@@ -191,8 +197,9 @@ public class Sintatico {
         if (tokenAtual.getId().equals(Token.PROGRAM)){
             gravaLinha();
             gravaToken();
-            proxToken();           
+            proxToken();
             id_();
+            variaveisList.pop();
             pontovirgula();
             pulaLinha();
             proxToken();
@@ -269,7 +276,7 @@ public class Sintatico {
         }else if(tokenAtual.getId().equals(Token.REPEAT)){
             repeat_(sem);
         }else{
-            comando_basico(sem);  
+            comando_basico(sem);
         }
     }
     
@@ -277,6 +284,7 @@ public class Sintatico {
         Nodulo temp = new Nodulo(null);
         
         if (tokenAtual.getId().equals("ID")){ //<id> := <expr_arit> ;
+            variaveisList.add(tokenAtual);
             temp.esq = new Nodulo(tokenAtual);
             proxToken();
             temp.raiz = tokenAtual;
@@ -306,8 +314,8 @@ public class Sintatico {
             sem.SEMANTICS_CHECK_ALL(tokenAtual);
             gravaToken();
             valor();
-            while (!tokenAtual.getId().equals(")")) {                
-                virgula();                
+            while (!tokenAtual.getId().equals(")")) {
+                virgula();
                 sem.SEMANTICS_CHECK_ALL(tokenAtual);
                 gravaToken();
                 valor();

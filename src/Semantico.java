@@ -52,20 +52,62 @@ public class Semantico {
     }
     
     public void SEMANTICS_CHECK_ALL(Token tokenAtual) throws NovaException{
-        /*if(!variaveisStringList.contains(tokenAtual.getLexema())){
-        if(variaveisIntegerList.contains(tokenAtual.getLexema())){
-        throw new NovaException("ERRO 3: Tipos incompatíveis <String> e <Integer>, linha: " + tokenAtual.getPos());
-        }else if(variaveisRealList.contains(tokenAtual.getLexema())){
-        throw new NovaException("ERRO 3: Tipos incompatíveis <String> e <Real>, linha: " + tokenAtual.getPos());
-        }else{
-        throw new NovaException("ERRO 4: Identificador nao declarado: '"
-        + tokenAtual.getLexema() + "', linha: " + tokenAtual.getPos());
+        boolean variavelFoiDeclarada = false;
+        
+        for (int i = 0; i < variaveisIntegerList.size(); i++) {
+            if (tokenAtual.getLexema().equals(variaveisIntegerList.get(i).getLexema())) {
+                throw new NovaException("ERRO 3: Tipos incompatíveis <STRING> e <INTEGER>, linha: " + tokenAtual.getPos());
+            }
         }
-        }*/
+        
+        for (int i = 0; i < variaveisRealList.size(); i++) {
+            if (tokenAtual.getLexema().equals(variaveisRealList.get(i).getLexema())) {
+                throw new NovaException("ERRO 3: Tipos incompatíveis <STRING> e <REAL>, linha: " + tokenAtual.getPos());
+            }
+        }
+        
+        for (int i = 0; i < variaveisStringList.size(); i++) {
+            if (tokenAtual.getLexema().equals(variaveisStringList.get(i).getLexema())) {
+                variavelFoiDeclarada = true;
+            }
+        }
+        
+        if(variavelFoiDeclarada == false){
+            throw new NovaException("ERRO 4: Variavel '" 
+                    + tokenAtual.getLexema() + "' nao foi declarada, linha: " + tokenAtual.getPos());
+        }
     }
     
-    private void SEMANTICS_CHECK_ERRO4(Token tokenAtual) throws NovaException{
+    public void SEMANTICS_CHECK_ERRO4(Token tokenAtual) throws NovaException{
+        boolean variavelExiste1 = false;
+        boolean variavelExiste2 = false;
+        boolean variavelExiste3 = false;
         
+        for (int i = 0; i < variaveisIntegerList.size(); i++) {
+            if (tokenAtual.getLexema().equals(variaveisIntegerList.get(i).getLexema())) {
+                variavelExiste1 = true;
+                i = variaveisIntegerList.size();
+            }
+        }
+        
+        for (int i = 0; i < variaveisStringList.size(); i++) {
+            if (tokenAtual.getLexema().equals(variaveisStringList.get(i).getLexema())) {
+                variavelExiste2 = true;
+                i = variaveisStringList.size();
+            }
+        }
+        
+        for (int i = 0; i < variaveisRealList.size(); i++) {
+            if (tokenAtual.getLexema().equals(variaveisRealList.get(i).getLexema())) {
+                variavelExiste3 = true;
+                i = variaveisRealList.size();
+            }
+        }
+        
+        if((variavelExiste1 || variavelExiste2 || variavelExiste3) == false){
+            throw new NovaException("ERRO 4: Variavel '" 
+                    + tokenAtual.getLexema() + "' nao foi declarada, linha: " + tokenAtual.getPos());
+        }
     }
     
     private void SEMANTICS_CHECK_ERRO6(LinkedList<Token> l1,LinkedList<Token> l2) throws NovaException{
@@ -100,12 +142,15 @@ public class Semantico {
                 }else{
                     expressaoAtual = expressaoAtual.concat(Integer.toString(arvore.esq.raiz.getValor()));
                 }
+                
                 expressaoAtual = expressaoAtual.concat(" " + arvore.raiz.getId() + " ");
+                
                 if(!arvore.dir.raiz.getId().equals("NUMERICO")){
                     expressaoAtual = expressaoAtual.concat(arvore.dir.raiz.getLexema());
                 }else{
                     expressaoAtual = expressaoAtual.concat(Integer.toString(arvore.dir.raiz.getValor()));
                 }
+                
                 arvore.raiz = new Token(expressaoAtual ,"TMP#" + Integer.toString(cont),arvore.raiz.getPos());
                 stringExpressoesList.add(arvore.raiz.getLexema() + " := " + expressaoAtual);
                 expressaoAtual = "";

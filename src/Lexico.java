@@ -135,10 +135,10 @@ public class Lexico {
             }                    
         }            
         //DEBUG
-        for (int i = 0; i < tokenFila.size(); i++) {
+        /*for (int i = 0; i < tokenFila.size(); i++) {
         System.out.println("Num:" + i);
         tokenFila.get(i).dados();
-        }
+        }*/
         
         Sintatico sint;
         sint = new Sintatico();
