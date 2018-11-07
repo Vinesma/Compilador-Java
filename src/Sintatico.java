@@ -446,7 +446,7 @@ public class Sintatico {
                 arvore.esq = expr_relacional();
             fecha_parenteses();
             if (tokenAtual.getId().equals(Token.AND) || tokenAtual.getId().equals(Token.OR)) {
-                arvore.raiz = tokenAtual;               
+                arvore.raiz = tokenAtual; 
                 proxToken();
                 abre_parenteses();
                     arvore.dir = expr_relacional();
@@ -455,7 +455,7 @@ public class Sintatico {
                 arvore = arvore.esq;
             }
             return arvore;
-        }       
+        }
     }
     
     private Nodulo expr_arit() throws NovaException{ 

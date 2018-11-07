@@ -82,7 +82,7 @@ public class Lexico {
                     case '-':
                     case '*':
                     case '/':
-                    case ')':                                
+                    case ')':            
                         if (charArray.charAt(i - 1) != ')' && !compara.equals("")) {
                             if(ehNumerico(compara)){
                                 token = new Token("NUMERICO", "", linhax, Integer.parseInt(compara));
@@ -101,7 +101,7 @@ public class Lexico {
                         break;
                     case ':':
                     case '<':
-                    case '>':
+                    case '>':                    
                         if(ehNumerico(compara)){
                             token = new Token("NUMERICO", "", linhax, Integer.parseInt(compara));
                             tokenFila.add(token);
@@ -109,7 +109,7 @@ public class Lexico {
                             throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
                         }else{
                             token = new Token("ID", compara, linhax);    
-                            tokenFila.add(token);     
+                            tokenFila.add(token);
                         }                            
                         compara = "";
                         compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
@@ -121,7 +121,7 @@ public class Lexico {
                 for (int j = 0; j < 18; j++) {
                     if (compara.equals(OPERADORES[j])){
                         token = new Token(compara, "", linhax);
-                        tokenFila.add(token);                            
+                        tokenFila.add(token);
                         compara = "";
                         j = 18;
                     }else if (compara.equals("|")){
@@ -135,10 +135,10 @@ public class Lexico {
             }                    
         }            
         //DEBUG
-        /*for (int i = 0; i < tokenFila.size(); i++) {
+        for (int i = 0; i < tokenFila.size(); i++) {
         System.out.println("Num:" + i);
         tokenFila.get(i).dados();
-        }*/
+        }
         
         Sintatico sint;
         sint = new Sintatico();
