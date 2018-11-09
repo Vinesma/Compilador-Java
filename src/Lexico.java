@@ -33,17 +33,17 @@ public class Lexico {
                     cont += 1;
                 } else if (linha.charAt(i) == '}'){
                     cont -= 1;
-                } else if((int) linha.charAt(i) > 32 && cont == 0){ //remove os espaços (ASCII = 32)
+                } else if((int) linha.charAt(i) > 31 && cont == 0){ //remove os espaços (ASCII = 32)
                     charArray = charArray.concat(Character.toString(linha.charAt(i))); 
                     //concatena com a String de chars
-                }                        
-            }                                
+                }
+            }
             charArray = charArray.concat("|");//concatena um espaço vazio na String para marcar o fim da linha
             linhax += 1;
-            linha = lerArq.readLine(); //lê da segunda linha em diante 
+            linha = lerArq.readLine(); //lê da segunda linha em diante
         }
         
-        if(cont != 0){ //erros relacionados a comentários
+        if(cont != 0){ //erro relacionado a comentários
                 throw new NovaException("ERRO 1: Identificador ou símbolo invalido, verifique os comentários");
         }
        
@@ -58,7 +58,7 @@ public class Lexico {
                 for (int j = 0; j < 16; j++){
                     if (compara.equals(RESERVADAS[j])){
                         token = new Token(compara, "", linhax);
-                        tokenFila.add(token);                           
+                        tokenFila.add(token);
                         compara = "";
                         j = 16;
                     }else if (compara.equals("|")){
@@ -69,8 +69,26 @@ public class Lexico {
                         j = 16;
                     }
                 }
-            }else{                        
+            }else{
                 switch (charArray.charAt(i)) {
+                    case ' ':
+                        if(!tokenFila.peek().getId().equals("ID") || !tokenFila.peek().getLexema().equals("")){
+                            if(ehNumerico(compara)){
+                                token = new Token("NUMERICO", "", linhax, Integer.parseInt(compara));
+                                tokenFila.add(token);
+                            }else if(!ehValido(compara)){
+                                throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
+                            }else{
+                                token = new Token("ID", compara, linhax);
+                                tokenFila.add(token);
+                            }
+                            compara = "";                            
+                        }else{
+                            token = new Token(" ","",linhax);
+                            tokenFila.add(token);
+                            compara = "";
+                        }
+                        break;
                     case '(':
                         token = new Token(Character.toString(charArray.charAt(i)), "", linhax);
                         tokenFila.add(token);
@@ -82,21 +100,21 @@ public class Lexico {
                     case '-':
                     case '*':
                     case '/':
-                    case ')':            
-                        if (charArray.charAt(i - 1) != ')' && !compara.equals("")) {
+                    case ')':
+                        if (charArray.charAt(i - 1) != ')') {
                             if(ehNumerico(compara)){
                                 token = new Token("NUMERICO", "", linhax, Integer.parseInt(compara));
                                 tokenFila.add(token);
                             }else if(!ehValido(compara)){
                                 throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
                             }else{
-                                token = new Token("ID", compara, linhax);    
+                                token = new Token("ID", compara, linhax);
                                 tokenFila.add(token);
-                            }                                
+                            }
                             compara = "";
                         }
                         token = new Token(Character.toString(charArray.charAt(i)), "", linhax);
-                        tokenFila.add(token);                            
+                        tokenFila.add(token);
                         compara = "";
                         break;
                     case ':':
@@ -114,26 +132,18 @@ public class Lexico {
                         compara = "";
                         compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
                         break;
+                    case '=':
+                        break;
+                    case '|':
+                        linhax += 1;
+                        compara = "";
+                        break;
                     default:
                         compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
                         break;
                 }
-                for (int j = 0; j < 18; j++) {
-                    if (compara.equals(OPERADORES[j])){
-                        token = new Token(compara, "", linhax);
-                        tokenFila.add(token);
-                        compara = "";
-                        j = 18;
-                    }else if (compara.equals("|")){
-                        linhax += 1;
-                        compara = "";
-                        j = 18;
-                    }else if (compara.equals(" ")){
-                        j = 18;
-                    }
-                }                        
-            }                    
-        }            
+            }
+        }
         //DEBUG
         for (int i = 0; i < tokenFila.size(); i++) {
         System.out.println("Num:" + i);
@@ -143,7 +153,7 @@ public class Lexico {
         Sintatico sint;
         sint = new Sintatico();
         
-        sint.PARSER(tokenFila, arquivo);    
+        //sint.PARSER(tokenFila, arquivo);    
     }
     
     private boolean ehValido(String str){ //verifica se existe um digito no primeiro caractere da string        
