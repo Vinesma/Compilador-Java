@@ -1,3 +1,0 @@
-Program
-a b c d e f
-   space
