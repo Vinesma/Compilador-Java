@@ -1,5 +1,5 @@
 Program teste;
-	Integer x, y, zz1, R4, r; real zz2;
+	Integer x, y  , zz1   ,R4, r; real zz2;
 	real i1, i2, h;
 	String l1, lex;
 Begin
