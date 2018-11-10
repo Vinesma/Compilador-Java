@@ -1,15 +1,15 @@
- Programteste;
+ Program teste;
 	Integer x,y,zz1,R4,r;real zz2;
-	real i1,i2,h;
+	real i1, i2,h;
 	String l1,lex;
-Begin
-	Begin
+Begin 
+	Beginv
 		i1 := ((i2-10)*(2.32+5))/(9);
                 i1 := (i2 * 10) - ((r + 5) / (7 - 8));
                 R4 := (i1 / 10.5) * (r + i2);
                 R4 := (r + 4) + ((i1 / 15) * (r + i2));
                 x := zz2; {esse comentario tem que ser ignorado}
-		if ((  x >= 20)and((i1<10)or(2<x))) then
+		if ((x <= 20)and((i1<10)or(2>x))) then
                 begin
                     y := 20;
                     All(l1,lex);
