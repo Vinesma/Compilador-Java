@@ -8,40 +8,47 @@ import java.awt.Desktop;
 import java.io.File;
 
 public class Sintatico {
-    private LinkedList<Token> tokens;
-    private LinkedList<String> stringExpressoesList  = new LinkedList<>();
-    private LinkedList<Token> variaveisStringList    = new LinkedList<>();
-    private LinkedList<Token> variaveisIntegerList   = new LinkedList<>();
-    private LinkedList<Token> variaveisRealList      = new LinkedList<>();
-    private LinkedList<Integer> linhas_gotoList      = new LinkedList<>();
+    private LinkedList<Token>   tokens;
+    private LinkedList<String>  stringExpressoesList   = new LinkedList<>();
+    private LinkedList<Token>   variaveisStringList    = new LinkedList<>();
+    private LinkedList<Token>   variaveisIntegerList   = new LinkedList<>();
+    private LinkedList<Token>   variaveisRealList      = new LinkedList<>();
+    private LinkedList<Token>   variaveisList          = new LinkedList<>();
+    private LinkedList<Boolean> variaveisAuxList       = new LinkedList<>();
+    private LinkedList<Integer> linhas_gotoList        = new LinkedList<>();
     private Token tokenAtual;
     private int linha = 1;
     private FileWriter arq;
     private PrintWriter gravarArq;
     
     Scanner ler = new Scanner(System.in);
-
     
     public void PARSER(LinkedList<Token> tokenFila, String arquivo) throws NovaException, IOException{
         this.tokens = tokenFila;
         tokenAtual = this.tokens.getFirst();
         Semantico sem;
         
-        arquivo = arquivo.replaceAll(".txt", "");       
-        arq = new FileWriter(arquivo + "_compilado.txt");                             
+        arquivo = arquivo.replaceAll(".txt", "");
+        arq = new FileWriter(arquivo + "_compilado.txt");
         gravarArq = new PrintWriter(arq);
         
         program_();     //Programa  <id> ;
+        espaco_opc();
         while (!tokenAtual.getId().equals(Token.BEGIN)){
+            espaco_opc();
             decl_var(); //[ <decl_var> ]*
         }
         sem = new Semantico(variaveisStringList,
                             variaveisIntegerList,
                             variaveisRealList);
         begin_();       //Begin
-        bloco(sem);    //Begin [<comando>  [ <comando>]*]? End ;        
+        bloco(sem);    //Begin [<comando>  [ <comando>]*]? End ;
         end_();         //End
         ponto();        //.
+        
+        for (int i = 0; i < variaveisList.size(); i++) {
+            sem.SEMANTICS_CHECK_ERRO3_ERRO4(variaveisList.get(i), variaveisAuxList.get(i));
+        }
         
         arq.close();
         JOptionPane.showMessageDialog(null, "Arquivo compilado com sucesso! "
@@ -70,11 +77,16 @@ public class Sintatico {
             tokenAtual = tokens.getFirst();
     }
     
-    private void valor() throws NovaException{
+    private void valor(boolean ehExpressao) throws NovaException{
+        espaco_opc();
         if (tokenAtual.getId().equals("NUMERICO")){
             proxToken();
+            espaco_opc();
         }else if (tokenAtual.getId().equals("ID")){
+            variaveisList.add(tokenAtual);
+            variaveisAuxList.add(ehExpressao);
             proxToken();
+            espaco_opc();
         }else{
             throw new NovaException("Erro 2: Símbolo "
                     + tokenAtual.getId() + " inesperado. Esperando: 'ID ou NUMERICO'. "
@@ -82,10 +94,14 @@ public class Sintatico {
         }
     }
     
-    private void id_() throws NovaException{
+    private void id_(boolean ehExpressao) throws NovaException{
+        espaco_opc();
         if (tokenAtual.getId().equals("ID")){
+            variaveisList.add(tokenAtual);
+            variaveisAuxList.add(ehExpressao);
             gravaToken();
             proxToken();
+            espaco_opc();
         }else{
             throw new NovaException("Erro 2: Símbolo "
                     + tokenAtual.getId() + " inesperado. Esperando: 'ID'. "
@@ -102,6 +118,7 @@ public class Sintatico {
     }
 
     private void pontovirgula() throws NovaException{
+        espaco_opc();
         if (!tokenAtual.getId().equals(Token.PONTOVIRGULA)){
             throw new NovaException("Erro 2: Símbolo "
                     + tokenAtual.getId() + " inesperado. Esperando: ';'. "
@@ -112,9 +129,11 @@ public class Sintatico {
     }
       
     private void virgula() throws NovaException{
+        espaco_opc();
         if (tokenAtual.getId().equals(Token.VIRGULA)){
             gravaToken();
             proxToken();
+            espaco_opc();
         }else{
             throw new NovaException("Erro 2: Símbolo "
                     + tokenAtual.getId() + " inesperado. Esperando: ','. "
@@ -123,11 +142,13 @@ public class Sintatico {
     }
     
     private void begin_() throws NovaException{
+        espaco_opc();
         if (tokenAtual.getId().equals(Token.BEGIN)){
             gravaLinha();
             gravaToken();
             pulaLinha();
             proxToken();
+            espaco_opc();
         }else{
             throw new NovaException("Erro 2: Símbolo "
                     + tokenAtual.getId() + " inesperado. Esperando: 'BEGIN'. "
@@ -136,8 +157,10 @@ public class Sintatico {
     }
     
     private void end_() throws NovaException{
+        espaco_opc();
         if (tokenAtual.getId().equals(Token.END)){
             proxToken();
+            espaco_opc();
         }else{
             throw new NovaException("Erro 2: Símbolo "
                     + tokenAtual.getId() + " inesperado. Esperando: 'END'. "
@@ -146,9 +169,11 @@ public class Sintatico {
     }
     
     private void ponto() throws NovaException{
+        espaco_opc();
         if (tokenAtual.getId().equals(Token.PONTO)){
             proxToken();
             gravaLinha();
+            espaco_opc();
             gravarArq.printf(" FIM");
         }else{
             throw new NovaException("Erro 2: Símbolo "
@@ -158,8 +183,10 @@ public class Sintatico {
     }
     
     private void abre_parenteses() throws NovaException{
+        espaco_opc();
         if (tokenAtual.getId().equals(Token.ABRE_PARENTESES)){
             proxToken();
+            espaco_opc();
         }else{
             throw new NovaException("Erro 2: Símbolo "
                     + tokenAtual.getId() + " inesperado. Esperando: '('. "
@@ -168,8 +195,10 @@ public class Sintatico {
     }
     
     private void fecha_parenteses() throws NovaException{
+        espaco_opc();
         if (tokenAtual.getId().equals(Token.FECHA_PARENTESES)){
             proxToken();
+            espaco_opc();
         }else{
             throw new NovaException("Erro 2: Símbolo "
                     + tokenAtual.getId() + " inesperado. Esperando: ')'. "
@@ -178,8 +207,10 @@ public class Sintatico {
     }
     
     private void doispontos_igual() throws NovaException{
+        espaco_opc();
         if (tokenAtual.getId().equals(Token.DOISPONTOS_IGUAL)){
             proxToken();
+            espaco_opc();
         }else{
             throw new NovaException("Erro 2: Símbolo "
                     + tokenAtual.getId() + " inesperado. Esperando: ':='. "
@@ -188,11 +219,15 @@ public class Sintatico {
     }
     
     private void program_() throws NovaException{
+        espaco_opc();
         if (tokenAtual.getId().equals(Token.PROGRAM)){
             gravaLinha();
             gravaToken();
-            proxToken();           
-            id_();
+            proxToken();
+            espaco_obg();
+            id_(false);
+            variaveisList.pop();
+            variaveisAuxList.pop();
             pontovirgula();
             pulaLinha();
             proxToken();
@@ -208,41 +243,47 @@ public class Sintatico {
             gravaLinha();
             gravaToken();
             proxToken();
+            espaco_obg();
             variaveisIntegerList.add(tokenAtual);
-            id_();
+            id_(false);
             while(!tokenAtual.getId().equals(";")){
                 virgula();
                 variaveisIntegerList.add(tokenAtual);
-                id_();
+                id_(false);
             }
             pulaLinha();
             proxToken();
+            espaco_opc();
         }else if(tokenAtual.getId().equals(Token.REAL)){
             gravaLinha();
             gravaToken();
             proxToken();
+            espaco_obg();
             variaveisRealList.add(tokenAtual);
-            id_();
+            id_(false);
             while(!tokenAtual.getId().equals(";")){
                 virgula();
                 variaveisRealList.add(tokenAtual);
-                id_();
+                id_(false);
             }
             pulaLinha();
             proxToken();
+            espaco_opc();
         }else if(tokenAtual.getId().equals(Token.STRING)){
             gravaLinha();
             gravaToken();
             proxToken();
+            espaco_obg();
             variaveisStringList.add(tokenAtual);
-            id_();
+            id_(false);
             while(!tokenAtual.getId().equals(";")){
                 virgula();
                 variaveisStringList.add(tokenAtual);
-                id_();
+                id_(false);
             }
             pulaLinha();
             proxToken();
+            espaco_opc();
         }else{
             throw new NovaException("Erro 2: Símbolo "
                     + tokenAtual.getId() + " inesperado. Esperando: 'INTEGER, STRING ou REAL'. "
@@ -253,8 +294,11 @@ public class Sintatico {
     private void bloco(Semantico sem) throws NovaException{ //Begin [<comando>  [ <comando>]*]? End ;
         begin_();
             comando(sem);
-            while (!tokenAtual.getId().equals(Token.END)) {            
+            espaco_opc();
+            while (!tokenAtual.getId().equals(Token.END)) {
+                espaco_opc();
                 comando(sem);
+                espaco_opc();
             }
         end_();
         pontovirgula();
@@ -263,22 +307,32 @@ public class Sintatico {
     
     private void comando(Semantico sem) throws NovaException{ //<comando_basico> | <iteracao> | if 
         if (tokenAtual.getId().equals(Token.IF)){
+            espaco_opc();
             if_(sem);
+            espaco_opc();
         }else if(tokenAtual.getId().equals(Token.WHILE)){
-            while_(sem);  
+            espaco_opc();
+            while_(sem);
+            espaco_opc();
         }else if(tokenAtual.getId().equals(Token.REPEAT)){
+            espaco_opc();
             repeat_(sem);
+            espaco_opc();
         }else{
-            comando_basico(sem);  
+            comando_basico(sem);
         }
     }
     
     private void comando_basico(Semantico sem) throws NovaException{ //<atribuicao> | <bloco> | All ( <id>  [, <id>]* );
         Nodulo temp = new Nodulo(null);
         
+        espaco_opc();
         if (tokenAtual.getId().equals("ID")){ //<id> := <expr_arit> ;
+            variaveisList.add(tokenAtual);
+            variaveisAuxList.add(true);
             temp.esq = new Nodulo(tokenAtual);
             proxToken();
+            espaco_opc();
             temp.raiz = tokenAtual;
             doispontos_igual();
                 temp.dir = expr_arit();
@@ -291,7 +345,9 @@ public class Sintatico {
             pontovirgula();
             proxToken();
         }else if(tokenAtual.getId().equals(Token.ALL)){
+            espaco_opc();
             all(sem);
+            espaco_opc();
         }else{
             bloco(sem);
         }
@@ -301,16 +357,17 @@ public class Sintatico {
         gravaLinha();
         gravaToken();
         proxToken();
+        espaco_opc();
         gravaToken();
         abre_parenteses();
             sem.SEMANTICS_CHECK_ALL(tokenAtual);
             gravaToken();
-            valor();
-            while (!tokenAtual.getId().equals(")")) {                
-                virgula();                
+            valor(false);
+            while (!tokenAtual.getId().equals(")")) {
+                virgula();
                 sem.SEMANTICS_CHECK_ALL(tokenAtual);
                 gravaToken();
-                valor();
+                valor(false);
             }
         gravaToken();
         fecha_parenteses();
@@ -324,8 +381,9 @@ public class Sintatico {
         temp.raiz = tokenAtual;
         
         proxToken();
+        espaco_opc();
         abre_parenteses();
-            temp.dir = expr_relacional();            
+            temp.dir = expr_relacional();
             stringExpressoesList = sem.SEMANTICS(temp);
             while(!stringExpressoesList.isEmpty()){
                 gravaLinha();
@@ -335,18 +393,22 @@ public class Sintatico {
         fecha_parenteses();
         then_();
         comando(sem);
+        espaco_opc();
         if(tokenAtual.getId().equals(Token.ELSE)){
             gravaLinha();
             gravarArq.printf(" ELSE");
             proxToken();
+            espaco_opc();
             pulaLinha();
             comando(sem);
         }
     }
     
     private void then_() throws NovaException{
+        espaco_opc();
         if (tokenAtual.getId().equals(Token.THEN)){
             proxToken();
+            espaco_opc();
         }else{
             throw new NovaException("Erro 2: Símbolo "
                     + tokenAtual.getId() + " inesperado. Esperando: 'THEN'. "
@@ -359,6 +421,7 @@ public class Sintatico {
         temp.raiz = tokenAtual;
         
         proxToken();
+        espaco_opc();
         abre_parenteses();
             temp.dir = expr_relacional();
             stringExpressoesList = sem.SEMANTICS(temp);
@@ -373,8 +436,10 @@ public class Sintatico {
     }
     
     private void do_() throws NovaException{
+        espaco_opc();
         if (tokenAtual.getId().equals(Token.DO)){
             proxToken();
+            espaco_opc();
         }else{
             throw new NovaException("Erro 2: Símbolo "
                     + tokenAtual.getId() + " inesperado. Esperando: 'DO'. "
@@ -389,6 +454,7 @@ public class Sintatico {
         gravaLinha();
         gravaToken();
         proxToken();
+        espaco_opc();
         pulaLinha();
         comando(sem);
         until_();
@@ -406,8 +472,10 @@ public class Sintatico {
     }
     
     private void until_() throws NovaException{
+        espaco_opc();
         if (tokenAtual.getId().equals(Token.UNTIL)){
             proxToken();
+            espaco_opc();
         }else{
             throw new NovaException("Erro 2: Símbolo "
                     + tokenAtual.getId() + " inesperado. Esperando: 'UNTIL'. "
@@ -418,14 +486,15 @@ public class Sintatico {
     private Nodulo expr_relacional() throws NovaException{ 
     //<val> <op_relacionais> <val> | (<expr_relacional>) [<op_booleanos> (<expr_relacional>)] ?
         Nodulo arvore = new Nodulo(null);
-    
+        
+        espaco_opc();
         if(e_valor(tokenAtual.getId())){
             arvore.esq = new Nodulo(tokenAtual);
-            valor();
+            valor(true);
             arvore.raiz = tokenAtual;
             op_relacionais();
             arvore.dir = new Nodulo(tokenAtual);
-            valor();
+            valor(true);
             
             return arvore;
         }else{
@@ -433,7 +502,7 @@ public class Sintatico {
                 arvore.esq = expr_relacional();
             fecha_parenteses();
             if (tokenAtual.getId().equals(Token.AND) || tokenAtual.getId().equals(Token.OR)) {
-                arvore.raiz = tokenAtual;               
+                arvore.raiz = tokenAtual; 
                 proxToken();
                 abre_parenteses();
                     arvore.dir = expr_relacional();
@@ -442,7 +511,7 @@ public class Sintatico {
                 arvore = arvore.esq;
             }
             return arvore;
-        }       
+        }
     }
     
     private Nodulo expr_arit() throws NovaException{ 
@@ -450,11 +519,12 @@ public class Sintatico {
         Nodulo arvore = new Nodulo(null);
         Token temp;
     
+        espaco_opc();
         if(e_valor(tokenAtual.getId())){
             temp = tokenAtual;
             
             arvore.raiz = temp;
-            valor();
+            valor(true);
             
             if(tokenAtual.getId().equals(Token.ADD) 
                 || tokenAtual.getId().equals(Token.SUB) 
@@ -465,7 +535,7 @@ public class Sintatico {
                 arvore.esq = new Nodulo(temp);
                 op_arit();
                 arvore.dir = new Nodulo (tokenAtual);
-                valor();
+                valor(true);
             }
             
             return arvore;
@@ -484,11 +554,13 @@ public class Sintatico {
     }
     
     private void op_arit() throws NovaException{ // + | - | * | /
+        espaco_opc();
         if (tokenAtual.getId().equals(Token.ADD) 
                 || tokenAtual.getId().equals(Token.SUB) 
                 || tokenAtual.getId().equals(Token.DIV) 
                 || tokenAtual.getId().equals(Token.MULT)){
             proxToken();
+            espaco_opc();
         }else{
             throw new NovaException("Erro 7: Operador "
                     + tokenAtual.getId() + " invalido. Esperando: 'Operador aritmetico'. "
@@ -497,6 +569,7 @@ public class Sintatico {
     }
     
     private void op_relacionais() throws NovaException{ // < | > | <= | >= | = | <>
+        espaco_opc();
         if (tokenAtual.getId().equals(Token.MENORQ) 
                 || tokenAtual.getId().equals(Token.MAIORQ) 
                 || tokenAtual.getId().equals(Token.MENORQ_IGUAL) 
@@ -504,9 +577,26 @@ public class Sintatico {
                 || tokenAtual.getId().equals(Token.IGUAL) 
                 || tokenAtual.getId().equals(Token.DIFERENTE)){
             proxToken();
+            espaco_opc();
         }else{
             throw new NovaException("Erro 7: Operador "
                     + tokenAtual.getId() + " invalido. Esperando: 'Operador relacional'. "
+                    + "Linha: " + tokenAtual.getPos());
+        }
+    }
+    
+    private void espaco_opc(){
+        if(tokenAtual.getId().equals(Token.ESPACO)){
+            proxToken();
+        }
+    }
+    
+    private void espaco_obg() throws NovaException{
+        if(tokenAtual.getId().equals(Token.ESPACO)){
+            proxToken();
+        }else{
+            throw new NovaException("Erro 2: Símbolo "
+                    + tokenAtual.getId() + " inesperado. Observar o espacamento. "
                     + "Linha: " + tokenAtual.getPos());
         }
     }

@@ -5,11 +5,11 @@ public class CompiladorJava {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {                    
+    public static void main(String[] args) {
         String nome;
-                
-        do{            
-            nome = JOptionPane.showInputDialog("Informe o nome do arquivo de texto:");            
+        
+        do{
+            nome = JOptionPane.showInputDialog("Informe o nome do arquivo de texto:");
             if (nome != null){
                 nome = nome.concat(".txt");
                 try{
