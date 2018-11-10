@@ -3,19 +3,13 @@
 	real i1, i2,h;
 	String l1,lex;
 Begin 
-	Beginv
+	Begin
 		i1 := ((i2-10)*(2.32+5))/(9);
-                i1 := (i2 * 10) - ((r + 5) / (7 - 8));
+                i1 := ( i2 * 10) - ((r + 5) / (7 - 8));
                 R4 := (i1 / 10.5) * (r + i2);
-                R4 := (r + 4) + ((i1 / 15) * (r + i2));
-                x := zz2; {esse comentario tem que ser ignorado}
-		if ((x <= 20)and((i1<10)or(2>x))) then
-                begin
-                    y := 20;
-                    All(l1,lex);
-                    x := 10;
-                end;
-                if(5 > r)then
+                R4 := (r + 4) + ((i1 / 15) * (r + i2)  );
+                x := zz2; {esse comentario tem que ser ignorado}		
+                if((x <> 20) or (i1 <= 30) or (y > 30.5) or (i1 >= 0))then
                     h := 2;
                 else
                     h := 1;
@@ -24,5 +18,11 @@ Begin
                 repeat
                     all(l1);
                 until(x < y);
+                if ( (x <= 20) and ( (i1<10) or (2 > x) )  ) then
+                begin
+                    y := 20;
+                    All(l1,lex);
+                    x := 10;
+                end;
 	end;
 end.

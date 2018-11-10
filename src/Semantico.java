@@ -57,14 +57,14 @@ public class Semantico {
         for (int i = 0; i < variaveisIntegerList.size(); i++) {
             if (tokenAtual.getLexema().equals(variaveisIntegerList.get(i).getLexema())) {
                 throw new NovaException("ERRO 3: Tipos incompatíveis, a variavel '" 
-                        + tokenAtual.getLexema() + "' nao e <INTEGER>, linha: " + tokenAtual.getPos());
+                        + tokenAtual.getLexema() + "' nao e <STRING>, linha: " + tokenAtual.getPos());
             }
         }
         
         for (int i = 0; i < variaveisRealList.size(); i++) {
             if (tokenAtual.getLexema().equals(variaveisRealList.get(i).getLexema())) {
                 throw new NovaException("ERRO 3: Tipos incompatíveis, a variavel '" 
-                        + tokenAtual.getLexema() + "' nao e <REAL>, linha: " + tokenAtual.getPos());
+                        + tokenAtual.getLexema() + "' nao e <STRING>, linha: " + tokenAtual.getPos());
             }
         }
         

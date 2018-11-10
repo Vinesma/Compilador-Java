@@ -42,8 +42,10 @@ public class Sintatico {
                             variaveisIntegerList,
                             variaveisRealList);
         begin_();       //Begin
+        linhas_gotoList.pop();
         bloco(sem);    //Begin [<comando>  [ <comando>]*]? End ;
         end_();         //End
+        linhas_gotoList.pop();
         ponto();        //.
         
         for (int i = 0; i < variaveisList.size(); i++) {
@@ -142,10 +144,11 @@ public class Sintatico {
     }
     
     private void begin_() throws NovaException{
-        espaco_opc();
+        espaco_opc();        
         if (tokenAtual.getId().equals(Token.BEGIN)){
             gravaLinha();
             gravaToken();
+            linhas_gotoList.add(linha);
             pulaLinha();
             proxToken();
             espaco_opc();
@@ -159,6 +162,7 @@ public class Sintatico {
     private void end_() throws NovaException{
         espaco_opc();
         if (tokenAtual.getId().equals(Token.END)){
+            linhas_gotoList.add(linha);
             proxToken();
             espaco_opc();
         }else{
@@ -501,15 +505,19 @@ public class Sintatico {
             abre_parenteses();
                 arvore.esq = expr_relacional();
             fecha_parenteses();
-            if (tokenAtual.getId().equals(Token.AND) || tokenAtual.getId().equals(Token.OR)) {
-                arvore.raiz = tokenAtual; 
+            do{                
+                arvore.raiz = tokenAtual;                
                 proxToken();
                 abre_parenteses();
-                    arvore.dir = expr_relacional();
+                arvore.dir = expr_relacional();
                 fecha_parenteses();
-            }else{
-                arvore = arvore.esq;
-            }
+                if(tokenAtual.getId().equals(Token.AND) || tokenAtual.getId().equals(Token.OR)){
+                    arvore.esq = new Nodulo(arvore.raiz, arvore.esq, arvore.dir);
+                    arvore.raiz = null;
+                    arvore.dir = null;
+                }
+            }while(tokenAtual.getId().equals(Token.AND) || tokenAtual.getId().equals(Token.OR));
+
             return arvore;
         }
     }

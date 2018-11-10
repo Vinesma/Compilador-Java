@@ -8,4 +8,10 @@ public class Nodulo {
         this.raiz = raiz;
         dir = null;
     }
+    
+    Nodulo(Token raiz, Nodulo esquerda, Nodulo direita){
+        esq = esquerda;
+        this.raiz = raiz;
+        dir = direita;
+    }
 }
