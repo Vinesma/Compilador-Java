@@ -39,7 +39,7 @@ public class Token {
     private int pos;
     private float valor;
     
-    public Token(String id, String lexema, int pos, int valor){
+    public Token(String id, String lexema, int pos, Float valor){
         this.id = id;
         this.lexema = lexema;
         this.pos = pos;

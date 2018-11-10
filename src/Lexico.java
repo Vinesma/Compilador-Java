@@ -196,7 +196,7 @@ public class Lexico {
     
     private void criaNovaVar(int linhax) throws NovaException{
         if(ehNumerico(compara)){
-            token = new Token("NUMERICO", "", linhax, (int) Float.parseFloat(compara));
+            token = new Token("NUMERICO", "", linhax, Float.parseFloat(compara));
             tokenFila.add(token);
         }else if(!ehValido(compara)){
             throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
