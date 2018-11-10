@@ -147,7 +147,7 @@ public class Semantico {
                 if(!arvore.esq.raiz.getId().equals("NUMERICO")){
                     expressaoAtual = expressaoAtual.concat(arvore.esq.raiz.getLexema());
                 }else{
-                    expressaoAtual = expressaoAtual.concat(Integer.toString(arvore.esq.raiz.getValor()));
+                    expressaoAtual = expressaoAtual.concat(Float.toString(arvore.esq.raiz.getValor()));
                 }
                 
                 expressaoAtual = expressaoAtual.concat(" " + arvore.raiz.getId() + " ");
@@ -155,7 +155,7 @@ public class Semantico {
                 if(!arvore.dir.raiz.getId().equals("NUMERICO")){
                     expressaoAtual = expressaoAtual.concat(arvore.dir.raiz.getLexema());
                 }else{
-                    expressaoAtual = expressaoAtual.concat(Integer.toString(arvore.dir.raiz.getValor()));
+                    expressaoAtual = expressaoAtual.concat(Float.toString(arvore.dir.raiz.getValor()));
                 }
                 
                 arvore.raiz = new Token(expressaoAtual ,"TMP#" + Integer.toString(cont),arvore.raiz.getPos());

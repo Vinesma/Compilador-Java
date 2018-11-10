@@ -7,18 +7,15 @@ public class Lexico {
         
     private LinkedList<Token> tokenFila = new LinkedList<Token>();
     private Token token;
+    private String compara = ""; //String utilizada para pegar tokens individualmente
     
     /*Vetores de checagem*/
     public static final String[] RESERVADAS = { "PROGRAM", "BEGIN", "END", "IF",
         "THEN", "ELSE", "WHILE", "DO", "UNTIL", "REPEAT", "INTEGER", "REAL",
         "ALL", "AND", "OR", "STRING" };
     
-    public static final String[] OPERADORES = { "<", ">", "=>", "<=", "=", "<>",
-        "+", "-", "*", "/", "OR", "AND", ".", ",", ";", ")", "(", ":="};
-    
     public void SCANNER(String arquivo) throws IOException,NovaException{
-        String charArray = ""; //String de todos os chars encontrados sem os espaços
-        String compara = ""; //String utilizada para pegar tokens individualmente        
+        String charArray = ""; //String de todos os chars encontrados sem os espaços                
         int cont = 0; //contador utilizado para diversas coisas
         int linhax = 1; //demarca em que linha o código se encontra
                     
@@ -72,25 +69,18 @@ public class Lexico {
             }else{
                 switch (charArray.charAt(i)) {
                     case ' ':
-                        if(!tokenFila.peek().getId().equals("ID") || !tokenFila.peek().getLexema().equals("")){
-                            if(ehNumerico(compara)){
-                                token = new Token("NUMERICO", "", linhax, Integer.parseInt(compara));
-                                tokenFila.add(token);
-                            }else if(!ehValido(compara)){
-                                throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
-                            }else{
-                                token = new Token("ID", compara, linhax);
-                                tokenFila.add(token);
-                            }
-                            compara = "";                            
+                        if(!tokenFila.peek().getId().equals("ID") && !tokenFila.peek().getLexema().equals("")){
+                            criaNovaVar(linhax);
+                            token = new Token("ESPACO"," ",linhax);
+                            tokenFila.add(token);
                         }else{
-                            token = new Token(" ","",linhax);
+                            token = new Token("ESPACO"," ",linhax);
                             tokenFila.add(token);
                             compara = "";
                         }
                         break;
                     case '(':
-                        token = new Token(Character.toString(charArray.charAt(i)), "", linhax);
+                        token = new Token("(", "", linhax);
                         tokenFila.add(token);
                         compara = "";
                         break;
@@ -101,38 +91,73 @@ public class Lexico {
                     case '*':
                     case '/':
                     case ')':
-                        if (charArray.charAt(i - 1) != ')') {
-                            if(ehNumerico(compara)){
-                                token = new Token("NUMERICO", "", linhax, Integer.parseInt(compara));
-                                tokenFila.add(token);
-                            }else if(!ehValido(compara)){
-                                throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
-                            }else{
-                                token = new Token("ID", compara, linhax);
-                                tokenFila.add(token);
-                            }
+                        if(tokenFila.peek().getId().equals("ESPACO")){
+                            token = new Token(Character.toString(charArray.charAt(i)),"",linhax);
+                            tokenFila.add(token);
                             compara = "";
+                        }else{
+                            criaNovaVar(linhax);
+                            token = new Token(Character.toString(charArray.charAt(i)),"",linhax);
+                            tokenFila.add(token);
                         }
-                        token = new Token(Character.toString(charArray.charAt(i)), "", linhax);
-                        tokenFila.add(token);
-                        compara = "";
                         break;
                     case ':':
-                    case '<':
-                    case '>':                    
-                        if(ehNumerico(compara)){
-                            token = new Token("NUMERICO", "", linhax, Integer.parseInt(compara));
-                            tokenFila.add(token);
-                        }else if(!ehValido(compara)){
-                            throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
+                        if(tokenFila.peek().getId().equals("ESPACO")){
+                            compara = compara.concat(Character.toString(charArray.charAt(i)));
                         }else{
-                            token = new Token("ID", compara, linhax);    
-                            tokenFila.add(token);
-                        }                            
-                        compara = "";
+                            criaNovaVar(linhax);
+                            compara = compara.concat(Character.toString(charArray.charAt(i)));
+                        }
+                    case '<':
+                        if(tokenFila.peek().getId().equals("ESPACO")){
+                            if (charArray.charAt(i + 1) == '>' || charArray.charAt(i + 1) == '=') {
+                                compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
+                            }else{
+                                token = new Token(Character.toString(charArray.charAt(i)), "", linhax);
+                                tokenFila.add(token);
+                                compara = "";
+                            }
+                        }else{
+                            if (charArray.charAt(i + 1) == '>' || charArray.charAt(i + 1) == '=') {
+                                compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
+                            }else{
+                                criaNovaVar(linhax);
+                                token = new Token(Character.toString(charArray.charAt(i)), "", linhax);
+                                tokenFila.add(token);
+                                compara = "";
+                            }
+                        }
+                    case '>':
                         compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
+                        token = new Token(compara, "", linhax);
+                        compara = "";
                         break;
                     case '=':
+                        if(tokenFila.peek().getId().equals("ESPACO")){
+                            if (charArray.charAt(i + 1) == '>') {
+                                compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
+                            }else{
+                                token = new Token(Character.toString(charArray.charAt(i)), "", linhax);
+                                tokenFila.add(token);
+                                compara = "";
+                            }
+                        }else{
+                            if (charArray.charAt(i + 1) == '>') {
+                                compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
+                            }else{
+                                criaNovaVar(linhax);
+                                token = new Token(Character.toString(charArray.charAt(i)), "", linhax);
+                                tokenFila.add(token);
+                                compara = "";
+                            }
+                        }
+                    case '.':
+                        if(tokenFila.peek().getId().equals("END")){
+                            token = new Token(".","",linhax);
+                            compara = "";
+                        }else{
+                            compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
+                        }
                         break;
                     case '|':
                         linhax += 1;
@@ -154,6 +179,19 @@ public class Lexico {
         sint = new Sintatico();
         
         //sint.PARSER(tokenFila, arquivo);    
+    }
+    
+    private void criaNovaVar(int linhax) throws NovaException{
+        if(ehNumerico(compara)){
+            token = new Token("NUMERICO", "", linhax, (int) Float.parseFloat(compara));
+            tokenFila.add(token);
+        }else if(!ehValido(compara)){
+            throw new NovaException("ERRO 1: Identificador ou símbolo invalido: '" + compara + "', linha: " + linhax);
+        }else{
+            token = new Token("ID", compara, linhax);
+            tokenFila.add(token);
+        }
+        compara = "";
     }
     
     private boolean ehValido(String str){ //verifica se existe um digito no primeiro caractere da string        

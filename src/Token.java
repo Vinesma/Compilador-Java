@@ -33,9 +33,11 @@ public class Token {
     public static final String MAIORQ_IGUAl = ">=";
     public static final String IGUAL = "=";
     public static final String DIFERENTE = "<>";
+    public static final String ESPACO = "ESPACO";
     
     private String id, lexema;
-    private int pos, valor;
+    private int pos;
+    private float valor;
     
     public Token(String id, String lexema, int pos, int valor){
         this.id = id;
@@ -70,7 +72,7 @@ public class Token {
 	return this.pos;
     }
     
-    public int getValor(){
+    public float getValor(){
 	return this.valor;
     }
     
