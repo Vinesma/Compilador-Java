@@ -69,11 +69,11 @@ public class Lexico {
             }else{
                 switch (charArray.charAt(i)) {
                     case ' ':
-                        if(!tokenFila.peek().getId().equals("ID") && !tokenFila.peek().getLexema().equals("")){
+                        if(!compara.equals("")){
                             criaNovaVar(linhax);
                             token = new Token("ESPACO"," ",linhax);
                             tokenFila.add(token);
-                        }else{
+                        }else if(tokenFila.isEmpty() || !tokenFila.peekLast().getId().equals("ESPACO")){
                             token = new Token("ESPACO"," ",linhax);
                             tokenFila.add(token);
                             compara = "";
@@ -91,7 +91,7 @@ public class Lexico {
                     case '*':
                     case '/':
                     case ')':
-                        if(tokenFila.peek().getId().equals("ESPACO")){
+                        if(compara.equals("")){
                             token = new Token(Character.toString(charArray.charAt(i)),"",linhax);
                             tokenFila.add(token);
                             compara = "";
@@ -102,14 +102,15 @@ public class Lexico {
                         }
                         break;
                     case ':':
-                        if(tokenFila.peek().getId().equals("ESPACO")){
+                        if(tokenFila.peekLast().getId().equals("ESPACO")){
                             compara = compara.concat(Character.toString(charArray.charAt(i)));
                         }else{
                             criaNovaVar(linhax);
                             compara = compara.concat(Character.toString(charArray.charAt(i)));
                         }
+                        break;
                     case '<':
-                        if(tokenFila.peek().getId().equals("ESPACO")){
+                        if(tokenFila.peekLast().getId().equals("ESPACO")){
                             if (charArray.charAt(i + 1) == '>' || charArray.charAt(i + 1) == '=') {
                                 compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
                             }else{
@@ -127,32 +128,44 @@ public class Lexico {
                                 compara = "";
                             }
                         }
-                    case '>':
-                        compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
-                        token = new Token(compara, "", linhax);
-                        compara = "";
+                        break;
+                    case '>': //fix this
+                        if(!compara.equals("") && !compara.equals("<")){
+                            criaNovaVar(linhax);
+                            compara = compara.concat(Character.toString(charArray.charAt(i)));
+                            token = new Token(compara, "", linhax);
+                            tokenFila.add(token);
+                            compara = "";
+                        }else{                            
+                            compara = compara.concat(Character.toString(charArray.charAt(i)));
+                            token = new Token(compara, "", linhax);
+                            tokenFila.add(token);
+                            compara = "";
+                        }
                         break;
                     case '=':
-                        if(tokenFila.peek().getId().equals("ESPACO")){
+                        if(tokenFila.peekLast().getId().equals("ESPACO")){
                             if (charArray.charAt(i + 1) == '>') {
                                 compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
                             }else{
-                                token = new Token(Character.toString(charArray.charAt(i)), "", linhax);
+                                compara = compara.concat(Character.toString(charArray.charAt(i)));
+                                token = new Token(compara, "", linhax);
                                 tokenFila.add(token);
                                 compara = "";
                             }
                         }else{
                             if (charArray.charAt(i + 1) == '>') {
-                                compara = compara.concat(Character.toString(Character.toUpperCase(charArray.charAt(i))));
+                                compara = compara.concat(Character.toString(charArray.charAt(i)));
                             }else{
-                                criaNovaVar(linhax);
-                                token = new Token(Character.toString(charArray.charAt(i)), "", linhax);
+                                compara = compara.concat(Character.toString(charArray.charAt(i)));
+                                token = new Token(compara, "", linhax);
                                 tokenFila.add(token);
                                 compara = "";
                             }
                         }
+                        break;
                     case '.':
-                        if(tokenFila.peek().getId().equals("END")){
+                        if(tokenFila.peekLast().getId().equals("END")){
                             token = new Token(".","",linhax);
                             compara = "";
                         }else{
