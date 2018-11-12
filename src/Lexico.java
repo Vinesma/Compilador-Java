@@ -6,10 +6,11 @@ import java.util.LinkedList;
 public class Lexico {
         
     private LinkedList<Token> tokenFila = new LinkedList<Token>();
+    //
     private Token token;
     private String compara = ""; //String utilizada para pegar tokens individualmente
     
-    /*Vetores de checagem*/
+    /*Vetor de checagem*/
     public static final String[] RESERVADAS = { "PROGRAM", "BEGIN", "END", "IF",
         "THEN", "ELSE", "WHILE", "DO", "UNTIL", "REPEAT", "INTEGER", "REAL",
         "ALL", "AND", "OR", "STRING" };
@@ -194,10 +195,10 @@ public class Lexico {
             }
         }
         //DEBUG
-        for (int i = 0; i < tokenFila.size(); i++) {
+        /*for (int i = 0; i < tokenFila.size(); i++) {
         System.out.println("Num:" + i);
         tokenFila.get(i).dados();
-        }
+        }*/
         
         Sintatico sint;
         sint = new Sintatico();
