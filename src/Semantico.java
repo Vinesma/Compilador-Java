@@ -5,6 +5,7 @@ public class Semantico {
     private LinkedList<Token>  variaveisIntegerList  = new LinkedList<>();
     private LinkedList<Token>  variaveisRealList     = new LinkedList<>();
     private LinkedList<String> stringExpressoesList  = new LinkedList<>();
+    //
     private String expressaoAtual = "";
     private int cont = 1;
     

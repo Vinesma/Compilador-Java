@@ -15,11 +15,14 @@ public class Sintatico {
     private LinkedList<Token>   variaveisRealList      = new LinkedList<>();
     private LinkedList<Token>   variaveisList          = new LinkedList<>();
     private LinkedList<Boolean> variaveisAuxList       = new LinkedList<>();
-    private LinkedList<Integer> linhas_gotoList        = new LinkedList<>();
-    private Token tokenAtual;
-    private int linha = 1;
+    private LinkedList<Integer> linhas_IF_List         = new LinkedList<>();
+    private LinkedList<Integer> linhas_WHILE_List      = new LinkedList<>();
+    private LinkedList<Integer> linhas_REPEAT_List     = new LinkedList<>();
+    //
+    private Token tokenAtual;    
     private FileWriter arq;
     private PrintWriter gravarArq;
+    private int linha = 1;
     
     Scanner ler = new Scanner(System.in);
     
@@ -27,6 +30,7 @@ public class Sintatico {
         this.tokens = tokenFila;
         tokenAtual = this.tokens.getFirst();
         Semantico sem;
+        Goto goto_;
         
         arquivo = arquivo.replaceAll(".txt", "");
         arq = new FileWriter(arquivo + "_compilado.txt");
@@ -42,10 +46,8 @@ public class Sintatico {
                             variaveisIntegerList,
                             variaveisRealList);
         begin_();       //Begin
-        linhas_gotoList.pop();
         bloco(sem);    //Begin [<comando>  [ <comando>]*]? End ;
         end_();         //End
-        linhas_gotoList.pop();
         ponto();        //.
         
         for (int i = 0; i < variaveisList.size(); i++) {
@@ -53,8 +55,10 @@ public class Sintatico {
         }
         
         arq.close();
+        goto_ = new Goto(linhas_IF_List, linhas_WHILE_List, linhas_REPEAT_List, arquivo + "_compilado.txt");
+        
         JOptionPane.showMessageDialog(null, "Arquivo compilado com sucesso! "
-                    + "Seu arquivo compilado foi criado: " + arquivo + "_compilado.txt");
+                    + "\n\nSeu arquivo: " + arquivo + "_compilado.txt");
         
         if (Desktop.isDesktopSupported()) {
             try {
@@ -148,7 +152,6 @@ public class Sintatico {
         if (tokenAtual.getId().equals(Token.BEGIN)){
             gravaLinha();
             gravaToken();
-            linhas_gotoList.add(linha);
             pulaLinha();
             proxToken();
             espaco_opc();
@@ -161,8 +164,7 @@ public class Sintatico {
     
     private void end_() throws NovaException{
         espaco_opc();
-        if (tokenAtual.getId().equals(Token.END)){
-            linhas_gotoList.add(linha);
+        if (tokenAtual.getId().equals(Token.END)){            
             proxToken();
             espaco_opc();
         }else{
@@ -396,15 +398,24 @@ public class Sintatico {
             }
         fecha_parenteses();
         then_();
+        linhas_IF_List.add(linha - 1);
         comando(sem);
+        linhas_IF_List.add(linha);
         espaco_opc();
         if(tokenAtual.getId().equals(Token.ELSE)){
+            linhas_IF_List.pollLast();
+            linhas_IF_List.add(linha + 1);
+            gravaLinha();
+            gravarArq.printf(" GOTO");
+            linhas_IF_List.add(linha);
+            pulaLinha();
             gravaLinha();
             gravarArq.printf(" ELSE");
             proxToken();
             espaco_opc();
             pulaLinha();
             comando(sem);
+            linhas_IF_List.add(linha);
         }
     }
     
@@ -423,7 +434,9 @@ public class Sintatico {
     private void while_(Semantico sem) throws NovaException{ //while (<expr_relacional>) do <comando>
         Nodulo temp = new Nodulo(null);
         temp.raiz = tokenAtual;
+        int temp2;
         
+        temp2 = linha;
         proxToken();
         espaco_opc();
         abre_parenteses();
@@ -436,7 +449,12 @@ public class Sintatico {
             }
         fecha_parenteses();
         do_();
+        linhas_WHILE_List.add(linha - 1);
         comando(sem);
+        linhas_WHILE_List.add(linha + 1);
+        gravaLinha();
+        gravarArq.printf(" GOTO " + temp2);
+        pulaLinha();
     }
     
     private void do_() throws NovaException{
@@ -454,12 +472,14 @@ public class Sintatico {
     private void repeat_(Semantico sem) throws NovaException{ //repeat <comando> until (<expr_relacional>);
         Nodulo temp = new Nodulo(null);
         temp.raiz = tokenAtual;
+        int temp2;
         
+        temp2 = linha;
         gravaLinha();
         gravaToken();
         proxToken();
         espaco_opc();
-        pulaLinha();
+        pulaLinha();        
         comando(sem);
         until_();
         abre_parenteses();
@@ -472,6 +492,8 @@ public class Sintatico {
             }
         fecha_parenteses();
         pontovirgula();
+        linhas_REPEAT_List.add(linha - 1);
+        linhas_REPEAT_List.add(temp2);
         proxToken();
     }
     
