@@ -1,17 +1,17 @@
 import java.util.LinkedList;
 
 public class Semantico {
-    private LinkedList<Token>  variaveisStringList   = new LinkedList<>();
-    private LinkedList<Token>  variaveisIntegerList  = new LinkedList<>();
-    private LinkedList<Token>  variaveisRealList     = new LinkedList<>();
-    private LinkedList<String> stringExpressoesList  = new LinkedList<>();
+    private LinkedList<Token>  variaveisStringList   = new LinkedList<>(); //guarda variáveis STRING
+    private LinkedList<Token>  variaveisIntegerList  = new LinkedList<>(); //guarda variáveis INTEGER
+    private LinkedList<Token>  variaveisRealList     = new LinkedList<>(); //guarda variáveis REAL
+    private LinkedList<String> stringExpressoesList  = new LinkedList<>(); //guarda expressões (aritméticas/relacionais)
     //
-    private String expressaoAtual = "";
-    private int cont = 1;
+    private String expressaoAtual = ""; //guarda código de três endereços
+    private int cont = 1; //usado nas variáveis temporárias: TMP# + 'cont'
     
     public Semantico(LinkedList<Token> out_VariaveisSList,
                      LinkedList<Token> out_VariaveisIList,
-                     LinkedList<Token> out_VariaveisRList) throws NovaException{
+                     LinkedList<Token> out_VariaveisRList) throws NovaException{ //construtor
         
         this.variaveisStringList = out_VariaveisSList;
         this.variaveisIntegerList = out_VariaveisIList;
@@ -23,15 +23,16 @@ public class Semantico {
         SEMANTICS_CHECK_ERRO6(variaveisRealList, variaveisIntegerList);
         SEMANTICS_CHECK_ERRO6(variaveisRealList, variaveisRealList);
         SEMANTICS_CHECK_ERRO6(variaveisIntegerList, variaveisIntegerList);
+        //observa se as variáveis quebram o ERRO 6, ou seja, se são duplicadas
     }
     
-    public LinkedList<String> SEMANTICS(Nodulo out_exp) throws NovaException{
+    public LinkedList<String> SEMANTICS(Nodulo out_exp) throws NovaException{ //retorna código de tres endereços
         String temp = "";
         
         stringExpressoesList.clear();
-        if(out_exp.raiz.getId().equals(":=")){
+        if(out_exp.raiz.getId().equals(":=")){ //verifica se a expressao é aritmética (TRUE) ou relacional (FALSE)
             temp = temp.concat(out_exp.esq.raiz.getLexema() + " " + out_exp.raiz.getId());
-            if(!temFolhas(out_exp.dir)){
+            if(!temFolhas(out_exp.dir)){ //verifica se a folha direita da arvore não tem filhos, indicando uma atribuição simples. Ex: y := 1;
                 if(out_exp.dir.raiz.getId().equals("NUMERICO")){
                     temp = temp.concat(" " + out_exp.dir.raiz.getValor());
                 }else{
@@ -39,7 +40,7 @@ public class Semantico {
                 }
                 stringExpressoesList.add(temp);
                 temp = "";
-            }else{
+            }else{ //caso a folha direita da arvore tenha filhos, indica uma atribuição complexa. Ex: y := 1 + (x * 2);
                 PercorreArvore(out_exp.dir);
                 temp = temp.concat(" TMP#" + Integer.toString(cont - 1));
                 stringExpressoesList.add(temp);
@@ -52,7 +53,7 @@ public class Semantico {
         return stringExpressoesList;
     }
     
-    public void SEMANTICS_CHECK_ALL(Token tokenAtual) throws NovaException{
+    public void SEMANTICS_CHECK_ALL(Token tokenAtual) throws NovaException{ //usado para observar erros de semântica na expressão ALL();
         boolean variavel_declarada = false;
         
         for (int i = 0; i < variaveisIntegerList.size(); i++) {
@@ -81,7 +82,7 @@ public class Semantico {
         }
     }
     
-    public void SEMANTICS_CHECK_ERRO3_ERRO4(Token tokenAtual, boolean ehExpressao) throws NovaException{
+    public void SEMANTICS_CHECK_ERRO3_ERRO4(Token tokenAtual, boolean ehExpressao) throws NovaException{ //usado para observar ERRO 3 e 4;
         boolean variavelExiste1 = false;
         boolean variavelExiste2 = false;
         boolean variavelExiste3 = false;
@@ -117,7 +118,7 @@ public class Semantico {
         }
     }
     
-    private void SEMANTICS_CHECK_ERRO6(LinkedList<Token> l1,LinkedList<Token> l2) throws NovaException{
+    private void SEMANTICS_CHECK_ERRO6(LinkedList<Token> l1,LinkedList<Token> l2) throws NovaException{ //usado para observar ERRO 6
         boolean temp = true; //usado quando as listas forem iguais
         if(l1 == l2){
             temp = false;
@@ -138,7 +139,7 @@ public class Semantico {
         }
     }
     
-    private void PercorreArvore(Nodulo arvore) {
+    private void PercorreArvore(Nodulo arvore) { //transforma uma arvore em uma lista de código de três endereços
         if(temFolhas(arvore)){
             if(temFolhas(arvore.esq) || temFolhas(arvore.dir)){
                 PercorreArvore(arvore.esq);
@@ -169,7 +170,7 @@ public class Semantico {
         }
     }
     
-    private boolean temFolhas(Nodulo arvore){
+    private boolean temFolhas(Nodulo arvore){ //retorna FALSE se a arvore não tem nenhuma folha; TRUE se tem ao menos uma folha 
         return !(arvore.esq == null && arvore.dir == null);
     }
 }
