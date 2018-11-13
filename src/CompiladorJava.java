@@ -16,7 +16,7 @@ public class CompiladorJava {
                     Lexico sc;
                     sc = new Lexico();
                     
-                    sc.SCANNER(nome);
+                    sc.SCANNER(nome); //chamada ao LÉXICO
                 }catch (IOException e){
                     JOptionPane.showMessageDialog(null, "Erro na abertura do arquivo, tente novamente!");
                 }catch (NovaException e){
