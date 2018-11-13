@@ -104,7 +104,12 @@ public class Lexico {
                         break;
                     case ':':
                         if(tokenFila.peekLast().getId().equals("ESPACO")){
-                            compara = compara.concat(Character.toString(charArray.charAt(i)));
+                            if (!compara.equals("")) {
+                                criaNovaVar(linhax);
+                                compara = compara.concat(Character.toString(charArray.charAt(i)));
+                            }else{
+                                compara = compara.concat(Character.toString(charArray.charAt(i)));
+                            }
                         }else{
                             criaNovaVar(linhax);
                             compara = compara.concat(Character.toString(charArray.charAt(i)));
