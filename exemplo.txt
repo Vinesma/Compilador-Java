@@ -33,7 +33,7 @@ Begin
 		End ;
 
 		if ((r1 <> 20) or (i1 <= 30) or (r3 > 30.5) or (i1 >= 0)) then 
-		Begin 	
+		Begin
 			R2 := r3 + 1;
 		End;
 	{so pra testar}
